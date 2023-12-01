@@ -1,27 +1,29 @@
 import React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Typography, Button } from "@mui/material";
-import { useState } from "react";
+import { Typography, Button, TextField, Box, Alert } from "@mui/material";
+import { useState} from "react";
 import axios from 'axios';
+import { useNavigate} from "react-router-dom";
 
 function Register() {
   const [name, setName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleRegistration = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/api/register", {
+      const url = "http://localhost:8080/api/register";
+      const response = await axios.post(url, {
         username: name,
       });
-
-      if (response.status === 200) {
-        console.log("Registration successful:", response);
-      } else {
-        console.error("Registration failed:", response.statusText);
+      console.log('apple', response);
+      if (response.status == 200 && response.data.success == true) {
+        navigate('/chat')
+      } else if (response.status == 200 && response.data.success == false) {
+        setErrorMessage("Username taken, please try again.");
       }
     } catch (error) {
-      console.error("Error during registration:", error.message);
+      setErrorMessage("An error occurred during registration. Please try again.");
     }
   };
 
@@ -49,6 +51,13 @@ function Register() {
           <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
           <TextField id="input-with-sx" label="Name" variant="standard" onChange={(e) => setName(e.target.value)}/>
         </Box>
+
+        {errorMessage && (
+          <Alert severity="error" sx={{ marginTop: '10px'}}>
+            {errorMessage}
+          </Alert>
+        )}
+
         <Button
           variant="contained"
           sx={{

@@ -4,24 +4,24 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const bodyParser = require('body-parser'); // Add this line for parsing JSON in the request body
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const registeredUsers = [];
 
 app.use(cors());
-app.use(bodyParser.json()); // Use bodyParser middleware for JSON parsing
+app.use(bodyParser.json());
 
 app.post('/api/register', (req, res) => {
   const username = req.body.username;
-  // Implement your registration logic here (e.g., store the username)
+  // Username input validation
   if (registeredUsers.includes(username.toLowerCase()) == false) {
     console.log('User registered:', username);
     registeredUsers.push(username.toLowerCase());
-    res.status(200).json({ message: 'Registration successful' });
+    res.status(200).json({ success: true, message: 'Registration successful' });
   } else {
     console.log('Username taken, please try again!');
-    res.status(400).json({ message: 'Username taken, please try again!'});
+    res.status(200).json({ success: false, message: 'Username taken, please try again!'});
   }
 
   
