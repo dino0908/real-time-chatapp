@@ -1,18 +1,29 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Typography, Button } from "@mui/material";
+import { useState } from "react";
+import axios from 'axios';
 
 function Register() {
+  const [name, setName] = useState("");
 
-    const handleRegistration = () => {
-        console.log('registered');
+  const handleRegistration = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/api/register", {
+        username: name,
+      });
+
+      if (response.status === 200) {
+        console.log("Registration successful:", response);
+      } else {
+        console.error("Registration failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error.message);
     }
+  };
 
   return (
     <React.Fragment>
@@ -30,12 +41,13 @@ function Register() {
           justifyContent={"center"}
           display={"flex"}
           marginBottom={"30px"}
+          
         >
           Register and start chatting!
         </Typography>
         <Box sx={{ display: "flex", alignItems: "flex-end" }}>
           <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
-          <TextField id="input-with-sx" label="Name" variant="standard" />
+          <TextField id="input-with-sx" label="Name" variant="standard" onChange={(e) => setName(e.target.value)}/>
         </Box>
         <Button
           variant="contained"
