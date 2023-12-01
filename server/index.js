@@ -4,16 +4,14 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const path = require('path');
 
-const usernames = [];
-const accounts = {};
+// Serve React app
+app.use(express.static(path.join(__dirname, '../client/react/dist')));
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/login.html");
-});
-
-app.get("/chat", (req, res) => {
-  res.sendFile(__dirname + "/chat.html");
+// Serve index.html for any other requests
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/react/', 'index.html'));
 });
 
 
@@ -41,6 +39,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(8080, () => {
-  console.log("listening on port:8080");
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
