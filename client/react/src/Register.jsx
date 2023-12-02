@@ -4,6 +4,7 @@ import { Typography, Button, TextField, Box, Alert } from "@mui/material";
 import { useState} from "react";
 import axios from 'axios';
 import { useNavigate} from "react-router-dom";
+import socket from './socket';
 
 function Register() {
   const [name, setName] = useState("");
@@ -16,8 +17,8 @@ function Register() {
       const response = await axios.post(url, {
         username: name,
       });
-      console.log('apple', response);
       if (response.status == 200 && response.data.success == true) {
+        socket.emit('set username', { username: name });
         navigate('/chat')
       } else if (response.status == 200 && response.data.success == false) {
         setErrorMessage("Username taken, please try again.");
