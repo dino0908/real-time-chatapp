@@ -42,7 +42,7 @@ app.get("/api/getUsername", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.on("chat message", (data) => {
-    io.emit("chat message", { username, msg });
+    io.emit("chat message", data);
   });
 
   socket.on("set username", (data) => {
@@ -50,6 +50,8 @@ io.on("connection", (socket) => {
     registeredUsers.push(username.toLowerCase());
     usernameSocketIDMapping[socket.id] = username;
   });
+
+  //socket on disconnect, remove user from mapping
 });
 
 const PORT = process.env.PORT || 8080;

@@ -1,4 +1,4 @@
-  import React, { useState, useEffect } from 'react';
+  import React, { useState, useEffect, useRef } from 'react';
   import socket from './socket';
   import axios from 'axios';
 
@@ -29,24 +29,38 @@
       setNewMessage(e.target.value);
     };
 
-    const handleSendMessage = () => {
-      if (newMessage.trim() !== '') {
-        setMessages([...messages, { text: newMessage }]);
-        setNewMessage('');
-      }
-    };
-
     const handleKeyPress = (e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
       }
     }
+    
+    const handleSendMessage = () => {
+      if (newMessage.trim() !== '') {
+        socket.emit('chat message', { username: username, message: newMessage });
+        setMessages([...messages, { username: username, message: newMessage }]);
+        setNewMessage('');
+      }
+    };
+
+    useEffect(() => {
+      socket.on('chat message', (data) => {
+        if (data.username != username) {
+          setMessages([...messages, { username: data.username, message: data.message }]);
+        }
+      })
+
+      return () => {
+        socket.off('chat message');
+      };
+    }, [messages])
+
 
     return (
       <div>
-        <div style={{ height: '400px', overflowY: 'hidden', border: '2px solid #ccc' }}>
+        <div style={{ height: '400px', overflowY: 'auto', border: '2px solid #ccc' }}>
           {messages.map((message, index) => (
-            <div key={index} style={{marginLeft: '20px', marginTop: '20px'}}>{username}: {message.text}</div>
+            <div key={index} style={{marginLeft: '20px', marginTop: '20px'}}>{message.username}: {message.message}</div>
           ))}
         </div>
         <div style={{ display: 'flex' }}>
