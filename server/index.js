@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "http://dinos3bucket.s3-website-ap-southeast-2.amazonaws.com",
+    origin: "http://dinos3bucketdeploy.s3-website-ap-southeast-2.amazonaws.com",
     methods: ["GET", "POST"]
   }
 });
