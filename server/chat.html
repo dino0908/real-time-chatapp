@@ -70,8 +70,10 @@
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        if (input.value) {
-          socket.emit("chat message", input.value);
+        var inp = input.value;
+        if (inp) {
+          var userId = localStorage.getItem('userId');
+          socket.emit("chat message", { userId, inp });
           input.value = "";
         }
       });

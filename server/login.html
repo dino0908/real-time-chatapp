@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      label,
+      button {
+        font-size: 2em;
+      }
+
+      input {
+        font-size: 2em;
+        margin-right: 20px;
+        background-color: #9fb8d2;
+        color: white;
+        padding: 5px;
+      }
+
+      #btn {
+        border: none;
+        background-color: #4a5f90;
+        color: white;
+        border-radius: 10px;
+        padding: 5px;
+      }
+
+      #btn:hover {
+        background-color: #284377;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <label for="name">Username: </label>
+      <input type="text" id="name" />
+      <button type="submit" id="btn">Chat now!</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      var button = document.getElementById("btn");
+      button.addEventListener("click", () => {
+        var username = document.getElementById("name").value;
+        if (localStorage.getItem("userId") == null) {
+          var userId = generateUserId();
+          localStorage.setItem("userId", userId);
+        } else {
+          var userId = localStorage.getItem("userId");
+        }
+        socket.emit("set username", { userId, username });
+        window.location.href = "/chat";
+      });
+      function generateUserId() {
+        return "user_" + Math.random().toString(36).substring(2, 15);
+      }
+    </script>
+  </body>
+</html>
