@@ -13,7 +13,7 @@ function Register() {
 
   const handleRegistration = async () => {
     try {
-      const url = "http://localhost:8080/api/register";
+      const url = "http://3.25.177.118:8080/api/register";
       const response = await axios.post(url, {
         username: name,
       });
