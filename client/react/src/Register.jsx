@@ -1,76 +1,76 @@
 import React from "react";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Typography, Button, TextField, Box, Alert } from "@mui/material";
+// import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useState} from "react";
 import axios from 'axios';
 import { useNavigate} from "react-router-dom";
-import socket from './socket';
+// import socket from './socket';
+
+import {
+  Box,
+  Center,
+  InputGroup,
+  Input,
+  InputRightElement,
+  Button,
+} from "@chakra-ui/react";
 
 function Register() {
-  const [name, setName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+  const [show, setShow] = React.useState(false)
+  const handleClick = () => setShow(!show)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-  const handleRegistration = async () => {
+const handleRegistration = async () => {
     try {
-      const url = "http://3.25.177.118:8080/api/register";
+      const url = 'http://localhost:8080/signup'
       const response = await axios.post(url, {
-        username: name,
-      });
-      if (response.status == 200 && response.data.success == true) {
-        socket.emit('set username', { username: name });
+        email: email,
+        password: password
+      })
+      if (response.data.success == true) {
         navigate('/chat')
-      } else if (response.status == 200 && response.data.success == false) {
-        setErrorMessage("Username taken, please try again.");
       }
-    } catch (error) {
-      setErrorMessage("An error occurred during registration. Please try again.");
     }
-  };
+    catch(error) {
+      console.log(error)
+    }
+  } 
+
 
   return (
     <React.Fragment>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "90vh",
-        }}
-      >
-        <Typography
-          variant="h4"
-          justifyContent={"center"}
-          display={"flex"}
-          marginBottom={"30px"}
-          
-        >
-          Register and start chatting!
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-          <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
-          <TextField id="input-with-sx" label="Name" variant="standard" onChange={(e) => setName(e.target.value)}/>
-        </Box>
-
-        {errorMessage && (
-          <Alert severity="error" sx={{ marginTop: '10px'}}>
-            {errorMessage}
-          </Alert>
-        )}
-
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: "30px",
-          }}
-          onClick={handleRegistration}
-        >
-          Register
-        </Button>
+      <Box sx={{ marginTop: "100px", fontSize: "50px" }}>
+        <Center>Registration page</Center>
       </Box>
+      <Box>
+        <Center>
+          <Input w='40%' type="email" placeholder="Enter email" onChange={(e)=>setEmail(e.target.value)}></Input>
+        </Center>
+      </Box>
+      <Box>
+        <Center marginTop={"20px"}>
+          <InputGroup w="40%" size="md">
+            <Input
+              pr="4.5rem"
+              type={show ? "text" : "password"}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+            <InputRightElement width="4.5rem">
+              <Button h="1.75rem" size="sm" onClick={handleClick}>
+                {show ? "Hide" : "Show"}
+              </Button>
+            </InputRightElement>
+          </InputGroup>
+        </Center>
+      </Box>
+      <Center marginTop={'20px'}>
+        <Button colorScheme='blue' onClick={handleRegistration}>Register</Button>
+      </Center>
+      
     </React.Fragment>
   );
+
 }
 
 export default Register;

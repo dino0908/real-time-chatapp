@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "http://dinos3bucketdeploy.s3-website-ap-southeast-2.amazonaws.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
@@ -15,8 +15,22 @@ const cors = require("cors");
 const registeredUsers = [];
 const usernameSocketIDMapping = {};
 
+const { signUp } = require("./auth/firebase")
+
 app.use(cors());
 app.use(bodyParser.json());
+
+app.post("/signup", (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+  signUp(email, password)
+  .then((response) => {
+    res.status(200).json({ success: true, message: "Signup successful" })
+  })
+  .catch((error) => {
+    console.log(error.message);
+  })
+});
 
 app.post("/api/register", (req, res) => {
   const username = req.body.username;

@@ -1,14 +1,19 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./Register";
 import Chat from "./Chat";
+import * as React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Register/>}/>
-        <Route path='/chat' element={<Chat/>}/>
-      </Routes>
-    </Router>
+    <ChakraProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Register />} />
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+      </Router>
+    </ChakraProvider>
   );
 }
 

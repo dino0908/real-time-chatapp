@@ -10,7 +10,7 @@
     useEffect(() => {
       //call the backend using axios and pass socket.id, let backend retrieve username and return to chat.jsx to display beside message
       try {
-        const url = 'http://3.25.177.118:8080/api/getUsername';
+        const url = 'http://localhost:8080/api/getUsername';
         axios.get(url, {
           params: {
             socketId: socket.id
