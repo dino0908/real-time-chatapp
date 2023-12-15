@@ -18,4 +18,8 @@ const signUp = async (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password)
 }
 
-module.exports = { signUp }
+const getUser = async () => {
+  return auth.currentUser
+}
+
+module.exports = { signUp, getUser }

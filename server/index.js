@@ -15,7 +15,7 @@ const cors = require("cors");
 const registeredUsers = [];
 const usernameSocketIDMapping = {};
 
-const { signUp } = require("./auth/firebase")
+const { signUp, getUser } = require("./auth/firebase")
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -32,41 +32,16 @@ app.post("/signup", (req, res) => {
   })
 });
 
-app.post("/api/register", (req, res) => {
-  const username = req.body.username;
-  // Username input validation
-  if (registeredUsers.includes(username.toLowerCase()) == false) {
-    console.log("User registered:", username);
-    registeredUsers.push(username.toLowerCase());
-    res.status(200).json({ success: true, message: "Registration successful" });
-  } else {
-    console.log("Username taken, please try again!");
-    res
-      .status(200)
-      .json({ success: false, message: "Username taken, please try again!" });
-  }
-});
-
-app.get("/api/getUsername", (req, res) => {
-  var socketId = req.query.socketId;
-  var username = usernameSocketIDMapping[socketId];
-  console.log(username);
-  res.status(200).json({ username: username });
+app.get('/getUser', (req, res) => {
+  getUser()
+  .then((response) => {
+    console.log(response.reloadUserInfo.localId)
+  })
+  .catch((error) => {
+    console.log(error.message)
+  })
+  
 })
-
-io.on("connection", (socket) => {
-  socket.on("chat message", (data) => {
-    io.emit("chat message", data);
-  });
-
-  socket.on("set username", (data) => {
-    var username = data.username;
-    registeredUsers.push(username.toLowerCase());
-    usernameSocketIDMapping[socket.id] = username;
-  });
-
-  //socket on disconnect, remove user from mapping
-});
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
