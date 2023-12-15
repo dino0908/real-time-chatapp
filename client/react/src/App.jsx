@@ -11,6 +11,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<Register />} />
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </Router>

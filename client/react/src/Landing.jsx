@@ -1,6 +1,7 @@
 import React from "react";
 import backgroundImage from "../assets/backgroundImage.svg";
-import phone from "..//assets/phone.png"
+import phone from "..//assets/phone.png";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Flex,
@@ -10,10 +11,12 @@ import {
   Button,
   Stack,
   Center,
-  Image
+  Image,
 } from "@chakra-ui/react";
 
 function Landing() {
+  const navigate = useNavigate();
+
   return (
     <div>
       <Box
@@ -30,10 +33,12 @@ function Landing() {
             <Heading size="xs">Dino's Chat App</Heading>
           </Box>
           <Box>
-            <HStack spacing="24px">
+            <HStack spacing="24px" marginTop={"10px"} marginLeft={"80px"}>
               <Text fontSize="12px">Features</Text>
               <Text fontSize="12px">Pricing</Text>
               <Text fontSize="12px">FAQ</Text>
+              <Text fontSize="12px">About</Text>
+              <Text fontSize="12px">Contact</Text>
             </HStack>
           </Box>
           <Box>
@@ -41,7 +46,7 @@ function Landing() {
               <Button colorScheme="teal" variant="solid">
                 Sign in
               </Button>
-              <Button colorScheme="teal" variant="outline">
+              <Button colorScheme="teal" variant="outline" onClick={()=>navigate('/signup')}>
                 Start free
               </Button>
             </Stack>
@@ -54,9 +59,9 @@ function Landing() {
         h="calc(100vh - 70px)"
         backgroundImage={`url(${backgroundImage})`}
         backgroundSize="cover"
-        overflow={'hidden'}
+        overflow={"hidden"}
       >
-        <Box paddingTop={'30px'}>
+        <Box paddingTop={"30px"}>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
             Real-time
           </Text>
@@ -75,15 +80,19 @@ function Landing() {
               experience.
             </Text>
           </Box>
-          <Center marginTop={'20px'}>
+          <Center marginTop={"20px"}>
             <Button colorScheme="teal" variant="solid">
               Get started
             </Button>
           </Center>
           <Center>
-          <Image src={phone} alt="Phone Image" marginTop="8" boxSize={'300px'} />
+            <Image
+              src={phone}
+              alt="Phone Image"
+              marginTop="8"
+              boxSize={"300px"}
+            />
           </Center>
-         
         </Box>
       </Box>
     </div>
