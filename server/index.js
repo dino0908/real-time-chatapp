@@ -35,7 +35,8 @@ app.post("/signup", (req, res) => {
 app.get('/getUser', (req, res) => {
   getUser()
   .then((response) => {
-    console.log(response.reloadUserInfo.localId)
+    const userID = response.reloadUserInfo.localId
+    res.status(200).json({ success: true, id: userID })
   })
   .catch((error) => {
     console.log(error.message)

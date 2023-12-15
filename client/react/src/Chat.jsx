@@ -8,7 +8,8 @@ function Chat() {
     const url = "http://localhost:8080/getUser";
     axios.get(url)
     .then((response) => {
-      console.log(response);
+      const id = response.data.id
+      setUser(id)
     })
     .catch((error) => {
       console.log(error.message)
