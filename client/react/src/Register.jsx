@@ -34,13 +34,21 @@ function Register() {
       if (response.data.success == true) {
         navigate("/chat");
       }
-      if (response.data.success == false) {
-        if (response.data.message == 'Email in use') {
+      else if (response.data.success == false) {
+        if (response.data.message == "Username and email taken") {
+          setUsernameInUse(true)
           setEmailInUse(true)
         }
-        if (response.data.message == "Username taken") {
-          setUsernameInUse(true)
+        else if (response.data.message == 'Email taken') {
+          setEmailInUse(true)
+          setUsernameInUse(false)
         }
+        else if (response.data.message == "Username taken") {
+          setUsernameInUse(true)
+          setEmailInUse(false)
+        }
+        
+        
       }
     } catch (error) {
       console.log(error);

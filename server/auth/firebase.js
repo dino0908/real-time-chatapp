@@ -64,4 +64,23 @@ const checkUsernameTaken = async (username) => {
     }
 };
 
-module.exports = { signUp, getUser, addUserToDatabase, checkUsernameTaken };
+const checkEmailTaken = async (email) => {
+  const colRef = collection(db, 'users')
+  const q = query(colRef, where('email', '==', email))
+  var docCount = 0
+  try {
+    const snapshot = await getDocs(q)
+    snapshot.docs.forEach((doc) => {
+      docCount++
+    })
+    if (docCount != 0) {
+      return true
+    }
+    return false
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
+
+module.exports = { signUp, getUser, addUserToDatabase, checkUsernameTaken, checkEmailTaken };

@@ -17,6 +17,7 @@ const {
   getUser,
   addUserToDatabase,
   checkUsernameTaken,
+  checkEmailTaken,
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -27,32 +28,40 @@ app.post("/signup", async (req, res) => {
   const password = req.body.password;
   const username = req.body.username;
 
-  checkUsernameTaken(username)
-  .then((taken) => {
-    if (taken) {
-      res.status(200).json({ success: false, message: "Username taken" });
+  try {
+    const usernameTaken = await checkUsernameTaken(username)
+    if (usernameTaken) {
+      const emailTaken = await checkEmailTaken(email)
+      console.log(emailTaken)
+      if (usernameTaken && emailTaken) {
+        res.status(200).json({ success: false, message: "Username and email taken" });
+      } else {
+        res.status(200).json({ success: false, message: "Username taken" });
+      }
     } else {
-      signUp(email, password)
-        .then((response) => {
-          res.status(200).json({ success: true, message: "Signup successful" });
-          getUser()
-            .then((response) => {
-              const userID = response.reloadUserInfo.localId;
-              addUserToDatabase(email, username, userID).then(() => {
-                console.log("User added successfully to database");
-              });
-            })
-            .catch((error) => {
-              console.log(error.message);
-            });
-        })
-        .catch((error) => {
-          if (error.code == "auth/email-already-in-use") {
-            res.status(200).json({ success: false, message: "Email in use" });
-          }
-        });
+      await signUp(email, password)
+      res.status(200).json({ success: true, message: "Signup successful" });
+      const getUserResponse = await getUser()
+      const userID = getUserResponse.reloadUserInfo.localId
+      await addUserToDatabase(email, username, userID)
+      console.log('User added to database')
     }
-  });
+  } catch (error) {
+    //can only reach here if username not taken
+    if (error.code == 'auth/email-already-in-use') {
+      res.status(200).json({ success: false, message: "Email taken" });
+    }
+  }
+  
+
+  
+  //       .catch((error) => {
+  //         if (error.code == "auth/email-already-in-use") {
+  //           res.status(200).json({ success: false, message: "Email in use" });
+  //         }
+  //       });
+  //   }
+  // });
 });
 
 app.get("/getUser", (req, res) => {
