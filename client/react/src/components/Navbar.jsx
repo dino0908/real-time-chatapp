@@ -1,16 +1,15 @@
-import React from 'react'
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Box,
-    Flex,
-    Text,
-    Heading,
-    HStack,
-    Button,
-    Stack,
-  } from "@chakra-ui/react";
+  Box,
+  Flex,
+  Text,
+  Heading,
+  HStack,
+  Button,
+  Stack,
+} from "@chakra-ui/react";
 function Navbar() {
-  
   const navigate = useNavigate();
 
   return (
@@ -26,7 +25,9 @@ function Navbar() {
       >
         <Flex direction="row" justifyContent="space-between" padding="4">
           <Box w="70px">
-            <Heading size="xs">Dino's Chat App</Heading>
+            <Button bgColor='#7e93ba' _hover={{ bg: '#7e93ba' }} onClick={() => navigate("/")}>
+              <Heading size="xs">Dino's Chat App</Heading>
+            </Button>
           </Box>
           <Box>
             <HStack spacing="24px" marginTop={"10px"} marginLeft={"80px"}>
@@ -39,10 +40,18 @@ function Navbar() {
           </Box>
           <Box>
             <Stack direction="row" spacing={2}>
-              <Button colorScheme="teal" variant="solid">
+              <Button
+                colorScheme="teal"
+                variant="solid"
+                onClick={() => navigate("/login")}
+              >
                 Sign in
               </Button>
-              <Button colorScheme="teal" variant="outline" onClick={()=>navigate('/signup')}>
+              <Button
+                colorScheme="teal"
+                variant="outline"
+                onClick={() => navigate("/signup")}
+              >
                 Start free
               </Button>
             </Stack>
@@ -50,7 +59,7 @@ function Navbar() {
         </Flex>
       </Box>
     </div>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

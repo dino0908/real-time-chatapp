@@ -12,10 +12,7 @@ const io = new Server(server, {
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const registeredUsers = [];
-const usernameSocketIDMapping = {};
-
-const { signUp, getUser } = require("./auth/firebase")
+const { signUp, getUser, addUserToDatabase } = require("./auth/firebase")
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,12 +20,25 @@ app.use(bodyParser.json());
 app.post("/signup", (req, res) => {
   const email = req.body.email
   const password = req.body.password
+  const username = req.body.username
   signUp(email, password)
   .then((response) => {
     res.status(200).json({ success: true, message: "Signup successful" })
+    getUser()
+    .then((response) => {
+      const userID = response.reloadUserInfo.localId
+      addUserToDatabase(email, username, userID)
+      .then(() => {
+        console.log('User added successfully')
+      })
+    }).catch((error) => {
+      console.log(error.message)
+    })
   })
   .catch((error) => {
-    console.log(error.message);
+    if (error.code == 'auth/email-already-in-use') {
+      res.status(200).json({ success: false, message: 'Email in use' })
+    }
   })
 });
 
