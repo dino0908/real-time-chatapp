@@ -1,5 +1,5 @@
 const { initializeApp } = require("firebase/app");
-const { getAuth, createUserWithEmailAndPassword } = require("firebase/auth");
+const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
 const {
   getFirestore,
   collection,
@@ -40,6 +40,10 @@ const addUserToDatabase = async (email, username, userid) => {
 const signUp = async (email, password) => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
+
+const signIn = async (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password)
+}
 
 const getUser = async () => {
   return auth.currentUser;
@@ -83,4 +87,4 @@ const checkEmailTaken = async (email) => {
   }
 }
 
-module.exports = { signUp, getUser, addUserToDatabase, checkUsernameTaken, checkEmailTaken };
+module.exports = { signUp, getUser, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn };

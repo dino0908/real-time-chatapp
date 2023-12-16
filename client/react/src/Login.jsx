@@ -19,17 +19,19 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
   
-    const handleRegistration = async () => {
+    const handleLogin = async () => {
       try {
-        const url = "http://localhost:8080/signup";
+        const url = "http://localhost:8080/login";
         const response = await axios.post(url, {
           email: email,
           password: password,
-          username: username,
         });
         if (response.data.success == true) {
           navigate("/chat");
+        } else {
+          setSignInUnsuccessful(true)
         }
       } catch (error) {
         console.log(error);
@@ -74,8 +76,8 @@ function Login() {
             </Button>
           </InputRightElement>
         </InputGroup>
-
-        <Button colorScheme="blue" onClick={handleRegistration}>
+        {signInUnsuccessful && <p>Email or password incorect. Please try again.</p>}
+        <Button colorScheme="blue" onClick={handleLogin}>
           Login
         </Button>
       </Box>

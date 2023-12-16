@@ -18,10 +18,25 @@ const {
   addUserToDatabase,
   checkUsernameTaken,
   checkEmailTaken,
+  signIn
 } = require("./auth/firebase");
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.post('/login', async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password
+  try {
+    await signIn(email, password)
+    res.status(200).json({ success: true, message: "User signed in" });
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Sign in unsuccessful" });
+  }
+  
+})
 
 app.post("/signup", async (req, res) => {
   const email = req.body.email;
@@ -52,16 +67,6 @@ app.post("/signup", async (req, res) => {
       res.status(200).json({ success: false, message: "Email taken" });
     }
   }
-  
-
-  
-  //       .catch((error) => {
-  //         if (error.code == "auth/email-already-in-use") {
-  //           res.status(200).json({ success: false, message: "Email in use" });
-  //         }
-  //       });
-  //   }
-  // });
 });
 
 app.get("/getUser", (req, res) => {
