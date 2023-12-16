@@ -20,6 +20,7 @@ function Register() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [emailInUse, setEmailInUse] = useState(false)
+  const [usernameInUse, setUsernameInUse] = useState(false)
   const navigate = useNavigate();
 
   const handleRegistration = async () => {
@@ -36,6 +37,9 @@ function Register() {
       if (response.data.success == false) {
         if (response.data.message == 'Email in use') {
           setEmailInUse(true)
+        }
+        if (response.data.message == "Username taken") {
+          setUsernameInUse(true)
         }
       }
     } catch (error) {
@@ -80,6 +84,7 @@ function Register() {
           placeholder="Enter username"
           onChange={(e) => setUsername(e.target.value)}
         ></Input>
+        {usernameInUse && <p>Username is already in use.</p>}
 
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
