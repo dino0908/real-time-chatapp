@@ -62,6 +62,17 @@ const getUsername = async (userID) => {
   }
 }
 
+const getUsernames = async (search) => {
+  const colRef = collection(db, "users");
+  const searchLowerCase = search.toLowerCase();
+  const snapshot = await getDocs(colRef);
+  const matchingUsernames = snapshot.docs
+    .map(doc => doc.data().username.toLowerCase())
+    .filter(username => username.includes(searchLowerCase));
+
+  return matchingUsernames;
+};
+
 const checkUsernameTaken = async (username) => {
     const colRef = collection(db, "users");
     const q = query(colRef, where("username", "==", username))
@@ -100,4 +111,6 @@ const checkEmailTaken = async (email) => {
   }
 }
 
-module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn };
+
+
+module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn, getUsernames };

@@ -19,7 +19,8 @@ const {
   checkUsernameTaken,
   checkEmailTaken,
   signIn,
-  getUsername
+  getUsername,
+  getUsernames
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -63,7 +64,6 @@ app.post("/signup", async (req, res) => {
       console.log('User added to database')
     }
   } catch (error) {
-    //can only reach here if username not taken
     if (error.code == 'auth/email-already-in-use') {
       res.status(200).json({ success: false, message: "Email taken" });
     }
@@ -81,7 +81,17 @@ app.get("/getUser", async (req, res) => {
     console.log(error)
   }
   
-
+app.post('/getUsernames', async (req, res) => {
+  try {
+    const search = req.body.search
+    const usernames = await getUsernames(search)
+    res.status(200).json({ success: true, usernames: usernames })
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
 });
 
 const PORT = process.env.PORT || 8080;
