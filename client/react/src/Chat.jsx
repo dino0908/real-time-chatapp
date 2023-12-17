@@ -10,6 +10,10 @@ import {
   InputGroup,
   Stack,
   VStack,
+  Divider,
+  Center,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 
 import { SearchIcon } from "@chakra-ui/icons";
@@ -46,7 +50,7 @@ function Chat() {
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon></SearchIcon>
                   </InputLeftElement>
-                  <Input type="tel" placeholder="Search" />
+                  <Input type="tel" placeholder="Search" bgColor={"white"} />
                 </InputGroup>
               </Stack>
             </Flex>
@@ -58,11 +62,45 @@ function Chat() {
                 <ActiveChat></ActiveChat>
                 <ActiveChat></ActiveChat>
                 <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
               </VStack>
             </Box>
           </Flex>
         </Box>
-        <Box flex={"80%"}>right box</Box>
+        <Box flex={"80%"} height={"100vh"}>
+          <Flex flexDirection={"column"} height={"100%"}>
+            <Box flex={"10%"} margin={"30px"}>
+              <Flex flexDirection={"column"} gap={3}>
+                <Heading>Stuart Khaw</Heading>
+                <Flex flexDirection={'row'}>
+                <Box w={'14px'} h={'14px'} borderRadius={'7px'} bgColor={'#29ff5a'} marginTop={'5px'} marginRight={'10px'}></Box>
+                <Text color={'#8a8a8a'}>Active now</Text>
+                </Flex>
+                
+              </Flex>
+            </Box>
+            <Center>
+              <Divider border={"1px solid #cccccc"} w={"90%"}></Divider>
+            </Center>
+
+            {/* chat display with input to type messages */}
+            <Box flex={"90%"}>
+              <Flex flexDirection={'column'} h='100%'>
+                {/* chat display */}
+                <Box flex={'85%'} borderBottom={'1px solid black'}>
+
+                </Box>
+
+                {/* input portion */}
+                <Box flex={'15%'}>
+
+                </Box>
+              </Flex>
+            </Box>
+          </Flex>
+        </Box>
       </Flex>
     </div>
   );
