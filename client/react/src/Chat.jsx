@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
@@ -22,15 +22,19 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
-  const [userID, setUserID] = useState("dino");
+  const [userID, setUserID] = useState('');
+  const [username, setUsername] = useState('')
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const messagesBoxRef = useRef();
+
 
   const handleSendMessage = () => {
     const newMessage = message;
     setMessages([...messages, newMessage]);
     setMessage('');
   };
+
   
 
   useEffect(() => {
@@ -38,13 +42,18 @@ function Chat() {
     axios
       .get(url)
       .then((response) => {
-        const id = response.data.id;
-        setUserID(id);
+        const userid = response.data.id;
+        setUserID(userid);
+        console.log(userid)
       })
       .catch((error) => {
         console.log(error.message);
       });
   }, []);
+
+  useEffect(() => {
+    messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+  }, [messages]);
 
   return (
     <div>
@@ -107,7 +116,7 @@ function Chat() {
             <Box flex={"90%"}>
               <Flex flexDirection={"column"} h="100%">
                 {/* chat display */}
-                <Box flex={"85%"} borderBottom={"1px solid black"} overflowY={'auto'} maxHeight={'75vh'}>
+                <Box flex={"85%"} borderBottom={"1px solid black"} overflowY={'auto'} maxHeight={'75vh'} ref={messagesBoxRef}>
                   {/* Render existing messages */}
                   {messages.map((message, index) => (
                     <div key={index}>
