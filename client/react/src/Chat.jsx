@@ -22,20 +22,17 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
-  const [userID, setUserID] = useState('');
-  const [username, setUsername] = useState('')
+  const [userID, setUserID] = useState("");
+  const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
 
-
   const handleSendMessage = () => {
     const newMessage = message;
     setMessages([...messages, newMessage]);
-    setMessage('');
+    setMessage("");
   };
-
-  
 
   useEffect(() => {
     const url = "http://localhost:8080/getUser";
@@ -43,9 +40,9 @@ function Chat() {
       .get(url)
       .then((response) => {
         const userid = response.data.id;
-        const username = response.data.username
+        const username = response.data.username;
         setUserID(userid);
-        setUsername(username)
+        setUsername(username);
       })
       .catch((error) => {
         console.log(error.message);
@@ -95,7 +92,7 @@ function Chat() {
           <Flex flexDirection={"column"} height={"100%"}>
             <Box flex={"10%"} margin={"30px"}>
               <Flex flexDirection={"column"} gap={3}>
-                <Heading>Stuart Khaw</Heading>
+                <Heading>Stuart</Heading>
                 <Flex flexDirection={"row"}>
                   <Box
                     w={"14px"}
@@ -117,11 +114,19 @@ function Chat() {
             <Box flex={"90%"}>
               <Flex flexDirection={"column"} h="100%">
                 {/* chat display */}
-                <Box flex={"85%"} borderBottom={"1px solid black"} overflowY={'auto'} maxHeight={'75vh'} ref={messagesBoxRef}>
+                <Box
+                  flex={"85%"}
+                  borderBottom={"1px solid black"}
+                  overflowY={"auto"}
+                  maxHeight={"75vh"}
+                  ref={messagesBoxRef}
+                >
                   {/* Render existing messages */}
                   {messages.map((message, index) => (
                     <div key={index}>
-                      <Text margin={'30px'}>{username}: {message}</Text>
+                      <Text margin={"30px"}>
+                        {username}: {message}
+                      </Text>
                     </div>
                   ))}
                 </Box>
@@ -138,11 +143,10 @@ function Chat() {
                         setMessage(e.target.value);
                       }}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleSendMessage();
                         }
                       }}
-                      
                     />
                     <Button colorScheme="blue" onClick={handleSendMessage}>
                       Send

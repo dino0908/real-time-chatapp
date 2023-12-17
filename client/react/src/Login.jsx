@@ -80,6 +80,9 @@ function Login() {
         <Button colorScheme="blue" onClick={handleLogin}>
           Login
         </Button>
+        <Button colorScheme="blue" onClick={()=>navigate('/chat')} marginLeft={'30px'}>
+          Developer Login
+        </Button>
       </Box>
     </React.Fragment>
   )

@@ -1,14 +1,13 @@
 import React from "react";
-import {
-  Box,
-  Avatar,
-  VStack,
-} from "@chakra-ui/react";
-
-import { ChatIcon, PhoneIcon, BellIcon } from "@chakra-ui/icons";
+import { Box, Avatar, VStack, Button, Divider } from "@chakra-ui/react";
+import { IoPersonAddOutline } from "react-icons/io5";
+import { ChatIcon } from "@chakra-ui/icons";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 function Sidebar() {
+  const navigate = useNavigate();
   return (
     <div>
       <Box
@@ -26,16 +25,41 @@ function Sidebar() {
         <Box flex="85%" borderBottom={"1px solid white"}>
           <VStack spacing={20}>
             <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-            <ChatIcon />
-            <PhoneIcon />
-            <BellIcon />
+            <Button
+              bgColor={"#00162f"}
+              _hover={{ bg: "#4287f5" }}
+              onClick={() => {
+                navigate("/chat");
+              }}
+            >
+              <ChatIcon size={23} color="white" />
+            </Button>
+            <Button
+              bgColor={"#00162f"}
+              _hover={{ bg: "#4287f5" }}
+              onClick={() => {
+                navigate("/newchat");
+              }}
+            >
+              <IoPersonAddOutline size={23} color="white" />
+            </Button>
+            <Button bgColor={"#00162f"} _hover={{ bg: "#4287f5" }}>
+              <CiSettings size={25} color="white" />
+            </Button>
           </VStack>
         </Box>
 
         <Box flex="15%">
-          <VStack spacing={12} mt={5}>
-            <CiSettings size={30} />
-            <RxExit size={23} />
+          <VStack spacing={12} mt={9}>
+            <Button bgColor={"#00162f"} _hover={{ bg: "#db1200" }}>
+              <RxExit
+                size={21}
+                color="white"
+                onClick={() => {
+                  navigate("/");
+                }}
+              />
+            </Button>
           </VStack>
         </Box>
       </Box>
