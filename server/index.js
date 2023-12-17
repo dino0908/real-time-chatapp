@@ -14,11 +14,12 @@ const cors = require("cors");
 
 const {
   signUp,
-  getUser,
+  getUserID,
   addUserToDatabase,
   checkUsernameTaken,
   checkEmailTaken,
-  signIn
+  signIn,
+  getUsername
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -69,15 +70,18 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/getUser", (req, res) => {
-  getUser()
-    .then((response) => {
-      const userID = response.reloadUserInfo.localId;
-      res.status(200).json({ success: true, id: userID });
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
+app.get("/getUser", async (req, res) => {
+  try {
+    const getUserIDResponse = await getUserID()
+    const userID = getUserIDResponse.reloadUserInfo.localId
+    const getUsernameResponse = await getUsername(userID)
+    res.status(200).json({ success: true, id: userID, username: getUsernameResponse });
+  }
+  catch(error) {
+    console.log(error)
+  }
+  
+
 });
 
 const PORT = process.env.PORT || 8080;

@@ -45,9 +45,22 @@ const signIn = async (email, password) => {
   return signInWithEmailAndPassword(auth, email, password)
 }
 
-const getUser = async () => {
+const getUserID = async () => {
   return auth.currentUser;
 };
+
+const getUsername = async (userID) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("UID", "==", userID))
+  try {
+    const snapshot = await getDocs(q)
+    const username = snapshot.docs[0].data().username;
+    return username
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
 
 const checkUsernameTaken = async (username) => {
     const colRef = collection(db, "users");
@@ -87,4 +100,4 @@ const checkEmailTaken = async (email) => {
   }
 }
 
-module.exports = { signUp, getUser, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn };
+module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn };

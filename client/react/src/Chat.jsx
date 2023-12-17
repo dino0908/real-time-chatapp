@@ -43,8 +43,9 @@ function Chat() {
       .get(url)
       .then((response) => {
         const userid = response.data.id;
+        const username = response.data.username
         setUserID(userid);
-        console.log(userid)
+        setUsername(username)
       })
       .catch((error) => {
         console.log(error.message);
@@ -120,7 +121,7 @@ function Chat() {
                   {/* Render existing messages */}
                   {messages.map((message, index) => (
                     <div key={index}>
-                      <Text margin={'30px'}>{message}</Text>
+                      <Text margin={'30px'}>{username}: {message}</Text>
                     </div>
                   ))}
                 </Box>
