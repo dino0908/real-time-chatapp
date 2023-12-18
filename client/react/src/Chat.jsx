@@ -56,8 +56,10 @@ function Chat() {
 
   const handleSendMessage = () => {
     const newMessage = message;
-    setMessages([...messages, newMessage]);
-    setMessage("");
+    if (message != '') {
+      setMessages([...messages, newMessage]);
+      setMessage("");
+    }
   };
 
   useEffect(() => {
