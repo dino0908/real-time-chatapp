@@ -20,7 +20,9 @@ const {
   checkEmailTaken,
   signIn,
   getUsername,
-  getUsernames
+  getUsernames,
+  startChat,
+  getUserIDFromUsername
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -95,6 +97,20 @@ app.post('/getUsernames', async (req, res) => {
   }
 })
 });
+
+app.post('/startChat', async (req, res) => {
+  try {
+    const username1 = req.body.username
+    const username2 = req.body.clickedUsername
+    const userID1 = await getUserIDFromUsername(username1)
+    const userID2 = await getUserIDFromUsername(username2)
+    startChat(userID1, userID2)
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {

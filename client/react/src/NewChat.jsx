@@ -24,9 +24,18 @@ function NewChat() {
   const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
 
-  const handleStartChat = async () => {
+  //username is client's username
+  //clickedUsername is username client wants to start chat with
+  const handleStartChat = async (clickedUsername) => {
     try {
-    } catch (error) {}
+      const url = 'http://localhost:8080/startChat'
+      axios.post(url, {
+        username: username,
+        clickedUsername: clickedUsername
+      })
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const handleSearch = async (search) => {
@@ -112,7 +121,7 @@ function NewChat() {
                         marginRight={"15px"}
                         marginTop={"5px"}
                         _hover={{ bg: "#009191" }}
-                        onClick={handleStartChat}
+                        onClick={() => handleStartChat(username)}
                       >
                         Start chat
                       </Button>

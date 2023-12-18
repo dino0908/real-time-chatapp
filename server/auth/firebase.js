@@ -160,8 +160,21 @@ const checkEmailTaken = async (email) => {
   }
 }
 
+// add to db collections 'chat' the userID of both parties
+const startChat = async (userID1, userID2) => {
+  const colRef = collection(db, 'chats')
+  try {
+    addDoc(colRef, {
+      userID1: userID1,
+      userID2: userID2
+    })
+    console.log('new chat added to database')
+  } catch(error) {
+    console.log(error)
+  }
+}
 
 
 
 
-module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn, getUsernames };
+module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn, getUsernames, startChat, getUserIDFromUsername };
