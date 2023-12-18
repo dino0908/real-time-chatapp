@@ -90,7 +90,8 @@ function Chat() {
             {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
-                {usernamesClientChattingWith.map((username, index) => (
+                {usernamesClientChattingWith.filter((username)=>username.toLowerCase().includes(searchInput.toLowerCase()))
+                .map((username, index) => (
                   <ActiveChat
                     key={index}
                     username={username}
