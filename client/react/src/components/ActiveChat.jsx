@@ -1,32 +1,32 @@
 import React from "react";
-import {
-  Flex,
-  Text,
-  Card,
-  Avatar,
-  Divider,
-} from "@chakra-ui/react";
+import { Flex, Text, Card, Avatar, Divider } from "@chakra-ui/react";
 
-function ActiveChat({ username }) {
+function ActiveChat({ username, onClick }) {
+  const handleClick = () => {
+    onClick(username);
+  };
+
   return (
-    <div>
-      <Card
-        width={"100%"}
-        h={"80px"}
-        bgColor={"#edf9ff"}
-        padding={"10px"}
-        boxShadow={"none"}
-      >
-        <Flex flexDirection={"row"} h={"100%"} alignItems={"center"}>
-          <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-          <Flex flexDirection={"column"} marginLeft={"10px"}>
-            <Text as={"b"}>{username}</Text>
-            <Text>recent message</Text>
-          </Flex>
+    <Card
+      width={"90%"}
+      h={"80px"}
+      bgColor={"white"}
+      padding={"10px"}
+      boxShadow={"none"}
+      onClick={() => onClick(username)} // onClick directly on Card
+      style={{ cursor: 'pointer', transition: 'background-color 0.3s' }}
+      _hover={{ bgColor: 'teal', color: 'white' }} // Change to your desired hover color
+      
+    >
+      <Flex flexDirection={"row"} h={"100%"} alignItems={"center"}>
+        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+        <Flex flexDirection={"column"} marginLeft={"10px"}>
+          <Text as={"b"}>{username}</Text>
+          <Text>recent message</Text>
         </Flex>
-      </Card>
-      <Divider border={"1px solid #cccccc"} w={"80%"}></Divider>
-    </div>
+      </Flex>
+      
+    </Card>
   );
 }
 

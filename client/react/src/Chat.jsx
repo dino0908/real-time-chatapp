@@ -31,6 +31,8 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
+  const [chattingWith, setChattingWith] = useState('')
+  const [searchInput, setSearchInput] = useState('');
 
   const handleSendMessage = () => {
     const newMessage = message;
@@ -81,15 +83,21 @@ function Chat() {
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon></SearchIcon>
                   </InputLeftElement>
-                  <Input type="tel" placeholder="Search" bgColor={"white"} />
+                  <Input type="tel" placeholder="Search" bgColor={"white"} onChange={(e)=>setSearchInput(e.target.value)}/>
                 </InputGroup>
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
-              <VStack spacing={0}>
+              <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith.map((username, index) => (
-                  <ActiveChat key={index} username={username} />
+                  <ActiveChat
+                    key={index}
+                    username={username}
+                    onClick={(username) =>
+                      setChattingWith(username)
+                    }
+                  />
                 ))}
               </VStack>
             </Box>
@@ -99,7 +107,7 @@ function Chat() {
           <Flex flexDirection={"column"} height={"100%"}>
             <Box flex={"10%"} margin={"30px"}>
               <Flex flexDirection={"column"} gap={3}>
-                <Heading>Stuart</Heading>
+                <Heading>{chattingWith}</Heading>
                 <Flex flexDirection={"row"}>
                   <Box
                     w={"14px"}
