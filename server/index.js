@@ -105,6 +105,7 @@ app.post('/startChat', async (req, res) => {
     const userID1 = await getUserIDFromUsername(username1)
     const userID2 = await getUserIDFromUsername(username2)
     startChat(userID1, userID2)
+    res.status(200).json({ success: true, message: 'New chat started'})
   }
   catch(error) {
     console.log(error)

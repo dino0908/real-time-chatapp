@@ -22,8 +22,11 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
+  //client's userid
   const [userID, setUserID] = useState("");
+  //client's username
   const [username, setUsername] = useState("");
+  const [usernamesClientChattingWith, setUsernamesClientChattingWith] = useState([])
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();

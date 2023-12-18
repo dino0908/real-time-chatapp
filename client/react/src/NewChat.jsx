@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
@@ -23,16 +24,18 @@ import {
 function NewChat() {
   const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
+  const navigate = useNavigate();
 
-  //username is client's username
-  //clickedUsername is username client wants to start chat with
   const handleStartChat = async (clickedUsername) => {
     try {
       const url = 'http://localhost:8080/startChat'
-      axios.post(url, {
+      const response = await axios.post(url, {
         username: username,
         clickedUsername: clickedUsername
       })
+      if (response.data.success == true) {
+        navigate('/chat')
+      }
     } catch (error) {
       console.log(error)
     }
