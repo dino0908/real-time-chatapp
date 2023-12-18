@@ -12,6 +12,8 @@ const {
   getDocs,
   query,
   where,
+  deleteDoc,
+  doc
 } = require("firebase/firestore");
 
 const firebaseConfig = {
@@ -216,9 +218,21 @@ const deleteChat = async (username1, username2) => {
   try {
     const userID1 = await getUserIDFromUsername(username1)
     const userID2 = await getUserIDFromUsername(username2)
-    //search through chats collection, find every doc, if it contains a userid1 and userid2 pair, delete the doc
     const colRef = collection(db, 'chats')
-    
+    const snapshot = await getDocs(colRef)
+    const arrayOfDocs = []
+    snapshot.docs.forEach((doc) => {
+      arrayOfDocs.push({ id: doc.id, ...doc.data() });
+    })
+    const docToDelete = arrayOfDocs.find((doc) => {
+      return (userID1 === doc.userID1 && userID2 === doc.userID2) || (userID1 == doc.userID2 && userID2 == doc.userID1);
+    });
+    if (docToDelete) {
+      const { id } = docToDelete //correct id
+      const docRef = doc(db, 'chats', id);
+      await deleteDoc(docRef)
+      console.log('Document deleted successfully')
+    }
   }
   catch(error) {
     console.log(error)
