@@ -34,6 +34,18 @@ function Chat() {
   const [chattingWith, setChattingWith] = useState('')
   const [searchInput, setSearchInput] = useState('');
 
+  useEffect(() => {
+    // Retrieve the chattingWith value from localStorage on component mount
+    const storedChattingWith = localStorage.getItem('chattingWith');
+    if (storedChattingWith) {
+      setChattingWith(storedChattingWith);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('chattingWith', chattingWith);
+  }, [chattingWith]);
+
   const handleSendMessage = () => {
     const newMessage = message;
     setMessages([...messages, newMessage]);
