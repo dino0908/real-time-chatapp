@@ -7,7 +7,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 
-function ActiveChat() {
+function ActiveChat({ username }) {
   return (
     <div>
       <Card
@@ -20,7 +20,7 @@ function ActiveChat() {
         <Flex flexDirection={"row"} h={"100%"} alignItems={"center"}>
           <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
           <Flex flexDirection={"column"} marginLeft={"10px"}>
-            <Text as={"b"}>User</Text>
+            <Text as={"b"}>{username}</Text>
             <Text>recent message</Text>
           </Flex>
         </Flex>

@@ -26,7 +26,8 @@ function Chat() {
   const [userID, setUserID] = useState("");
   //client's username
   const [username, setUsername] = useState("");
-  const [usernamesClientChattingWith, setUsernamesClientChattingWith] = useState([])
+  const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
+    useState([]);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
@@ -38,14 +39,22 @@ function Chat() {
   };
 
   useEffect(() => {
-    const url = "http://localhost:8080/getUser";
     axios
-      .get(url)
+      .get("http://localhost:8080/getUser")
       .then((response) => {
         const userid = response.data.id;
         const username = response.data.username;
         setUserID(userid);
         setUsername(username);
+        //get list of usernames client has active chat with
+        axios
+          .post("http://localhost:8080/activeChats", {
+            username: username,
+          })
+          .then((response) => {
+            const usernamesClientHasActiveChatWith = response.data.array;
+            setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+          });
       })
       .catch((error) => {
         console.log(error.message);
@@ -79,14 +88,9 @@ function Chat() {
             {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0}>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
+                {usernamesClientChattingWith.map((username, index) => (
+                  <ActiveChat key={index} username={username} />
+                ))}
               </VStack>
             </Box>
           </Flex>
