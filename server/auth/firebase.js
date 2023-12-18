@@ -62,6 +62,19 @@ const getUsername = async (userID) => {
   }
 }
 
+const getUserIDFromUsername = async (username) => {
+  const colRef = collection(db, 'users')
+  const q = query(colRef, where('username', '==', username))
+  try {
+    const snapshot = await getDocs(q)
+    const userID = snapshot.docs[0].data().UID
+    return userID
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
+
 const getUsernames = async (search, currentUserUsername) => {
   const colRef = collection(db, "users");
   const searchLowerCase = search.toLowerCase();
@@ -70,8 +83,41 @@ const getUsernames = async (search, currentUserUsername) => {
     .map(doc => doc.data().username.toLowerCase())
     .filter(username => username.includes(searchLowerCase) && username !== currentUserUsername.toLowerCase());
 
+  filterUsernamesThatHasStartedChat(matchingUsernames, currentUserUsername);
   return matchingUsernames;
 };
+
+const filterUsernamesThatHasStartedChat = async (matchingUsernames, currentUserUsername) => {
+  const colRef = collection(db, 'chats')
+  try {
+    const snapshot = await getDocs(colRef)
+    const arrayOfDocObjects = []
+    snapshot.docs.forEach((doc) => {
+      arrayOfDocObjects.push(doc.data())
+    })
+    const currentUserID = await getUserIDFromUsername(currentUserUsername)
+    const arrayOfIDCurrentUserChattingWith = []
+    arrayOfDocObjects.forEach((obj) => {
+      if (currentUserID == obj.userID1 || currentUserID == obj.userID2) {
+        if (currentUserID == obj.userID1) {
+          arrayOfIDCurrentUserChattingWith.push(obj.userID2)
+        } else {
+          arrayOfIDCurrentUserChattingWith.push(obj.userID1)
+        }
+      }
+    })
+    console.log('Array of ID Dino chatting with', arrayOfIDCurrentUserChattingWith) //correct
+    //from currentUserUsername, get currentUserID done
+    //for each object in array, check if currentUserID matches userID1 or userID2
+    //if it matches either one, means the user is chatting with someone (other id). get that other id and translate back to username.
+    //remove username from matchingusernames
+    //return matchingusernames
+  }
+  catch(error) {
+    console.log(error)
+  }
+  
+}
 
 const checkUsernameTaken = async (username) => {
     const colRef = collection(db, "users");
