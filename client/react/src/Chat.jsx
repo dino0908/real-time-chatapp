@@ -1,80 +1,165 @@
-  import React, { useState, useEffect, useRef } from 'react';
-  import socket from './socket';
-  import axios from 'axios';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import Sidebar from "./components/Sidebar";
+import ActiveChat from "./components/ActiveChat";
+import {
+  Box,
+  Flex,
+  Input,
+  InputLeftElement,
+  InputGroup,
+  Stack,
+  VStack,
+  Divider,
+  Center,
+  Heading,
+  Text,
+  HStack,
+  Button,
+} from "@chakra-ui/react";
+import { BsEmojiSmile } from "react-icons/bs";
 
-  function Chat() {
-    const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
-    const [username, setUsername] = useState('');
+import { SearchIcon } from "@chakra-ui/icons";
 
-    useEffect(() => {
-      //call the backend using axios and pass socket.id, let backend retrieve username and return to chat.jsx to display beside message
-      try {
-        const url = 'http://3.25.177.118:8080/api/getUsername';
-        axios.get(url, {
-          params: {
-            socketId: socket.id
-          }
-        })
-        .then((response) => {
-          var username = response.data.username;
-          setUsername(username);
-        })
-      } catch(error) {
-        console.log(error);
-      }
-    }, []);
+function Chat() {
+  const [userID, setUserID] = useState("");
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const messagesBoxRef = useRef();
 
-    const handleInputChange = (e) => {
-      setNewMessage(e.target.value);
-    };
+  const handleSendMessage = () => {
+    const newMessage = message;
+    setMessages([...messages, newMessage]);
+    setMessage("");
+  };
 
-    const handleKeyPress = (e) => {
-      if (e.key === 'Enter') {
-        handleSendMessage();
-      }
-    }
-    
-    const handleSendMessage = () => {
-      if (newMessage.trim() !== '') {
-        socket.emit('chat message', { username: username, message: newMessage });
-        setMessages([...messages, { username: username, message: newMessage }]);
-        setNewMessage('');
-      }
-    };
-
-    useEffect(() => {
-      socket.on('chat message', (data) => {
-        if (data.username != username) {
-          setMessages([...messages, { username: data.username, message: data.message }]);
-        }
+  useEffect(() => {
+    const url = "http://localhost:8080/getUser";
+    axios
+      .get(url)
+      .then((response) => {
+        const userid = response.data.id;
+        const username = response.data.username;
+        setUserID(userid);
+        setUsername(username);
       })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  }, []);
 
-      return () => {
-        socket.off('chat message');
-      };
-    }, [messages])
+  useEffect(() => {
+    messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+  }, [messages]);
 
+  return (
+    <div>
+      <Sidebar></Sidebar>
+      <Flex
+        marginLeft="100px" //sidebar width is 100px
+        flexDirection={"row"}
+        height={"100vh"}
+      >
+        <Box flex={"20%"} minW={"180px"}>
+          <Flex height={"100%"} flexDirection={"column"} bgColor={"#def4ff"}>
+            <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
+              <Stack spacing={4} alignItems={"center"}>
+                <InputGroup w={"95%"}>
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon></SearchIcon>
+                  </InputLeftElement>
+                  <Input type="tel" placeholder="Search" bgColor={"white"} />
+                </InputGroup>
+              </Stack>
+            </Flex>
+            {/* bottom part with active chats */}
+            <Box flex={"90%"} bgColor={"#edf9ff"}>
+              <VStack spacing={0}>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+                <ActiveChat></ActiveChat>
+              </VStack>
+            </Box>
+          </Flex>
+        </Box>
+        <Box flex={"80%"} height={"100vh"}>
+          <Flex flexDirection={"column"} height={"100%"}>
+            <Box flex={"10%"} margin={"30px"}>
+              <Flex flexDirection={"column"} gap={3}>
+                <Heading>Stuart</Heading>
+                <Flex flexDirection={"row"}>
+                  <Box
+                    w={"14px"}
+                    h={"14px"}
+                    borderRadius={"7px"}
+                    bgColor={"#29ff5a"}
+                    marginTop={"5px"}
+                    marginRight={"10px"}
+                  ></Box>
+                  <Text color={"#8a8a8a"}>Active now</Text>
+                </Flex>
+              </Flex>
+            </Box>
+            <Center>
+              <Divider border={"1px solid #cccccc"} w={"90%"}></Divider>
+            </Center>
 
-    return (
-      <div>
-        <div style={{ height: '400px', overflowY: 'auto', border: '2px solid #ccc' }}>
-          {messages.map((message, index) => (
-            <div key={index} style={{marginLeft: '20px', marginTop: '20px'}}>{message.username}: {message.message}</div>
-          ))}
-        </div>
-        <div style={{ display: 'flex' }}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={handleInputChange}
-            style={{ flex: 1 }}
-            onKeyDown={handleKeyPress}
-          />
-          <button onClick={handleSendMessage}>Send</button>
-        </div>
-      </div>
-    );
-  }
+            {/* chat display with input to type messages */}
+            <Box flex={"90%"}>
+              <Flex flexDirection={"column"} h="100%">
+                {/* chat display */}
+                <Box
+                  flex={"85%"}
+                  borderBottom={"1px solid black"}
+                  overflowY={"auto"}
+                  maxHeight={"75vh"}
+                  ref={messagesBoxRef}
+                >
+                  {/* Render existing messages */}
+                  {messages.map((message, index) => (
+                    <div key={index}>
+                      <Text margin={"30px"}>
+                        {username}: {message}
+                      </Text>
+                    </div>
+                  ))}
+                </Box>
 
-  export default Chat;
+                {/* input portion */}
+                <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
+                  <HStack w={"100%"} spacing={10}>
+                    <BsEmojiSmile size={25} />
+                    <Input
+                      placeholder="Enter message"
+                      w={"80%"}
+                      value={message}
+                      onChange={(e) => {
+                        setMessage(e.target.value);
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleSendMessage();
+                        }
+                      }}
+                    />
+                    <Button colorScheme="blue" onClick={handleSendMessage}>
+                      Send
+                    </Button>
+                  </HStack>
+                </Flex>
+              </Flex>
+            </Box>
+          </Flex>
+        </Box>
+      </Flex>
+    </div>
+  );
+}
+
+export default Chat;

@@ -1,72 +1,114 @@
 import React from "react";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Typography, Button, TextField, Box, Alert } from "@mui/material";
-import { useState} from "react";
-import axios from 'axios';
-import { useNavigate} from "react-router-dom";
-import socket from './socket';
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+
+import {
+  Box,
+  InputGroup,
+  Input,
+  InputRightElement,
+  Button,
+  Text,
+} from "@chakra-ui/react";
 
 function Register() {
-  const [name, setName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [show, setShow] = React.useState(false);
+  const handleClick = () => setShow(!show);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [emailInUse, setEmailInUse] = useState(false)
+  const [usernameInUse, setUsernameInUse] = useState(false)
   const navigate = useNavigate();
 
   const handleRegistration = async () => {
     try {
-      const url = "http://3.25.177.118:8080/api/register";
+      const url = "http://localhost:8080/signup";
       const response = await axios.post(url, {
-        username: name,
+        email: email,
+        password: password,
+        username: username,
       });
-      if (response.status == 200 && response.data.success == true) {
-        socket.emit('set username', { username: name });
-        navigate('/chat')
-      } else if (response.status == 200 && response.data.success == false) {
-        setErrorMessage("Username taken, please try again.");
+      if (response.data.success == true) {
+        navigate("/chat");
+      }
+      else if (response.data.success == false) {
+        if (response.data.message == "Username and email taken") {
+          setUsernameInUse(true)
+          setEmailInUse(true)
+        }
+        else if (response.data.message == 'Email taken') {
+          setEmailInUse(true)
+          setUsernameInUse(false)
+        }
+        else if (response.data.message == "Username taken") {
+          setUsernameInUse(true)
+          setEmailInUse(false)
+        }
+        
+        
       }
     } catch (error) {
-      setErrorMessage("An error occurred during registration. Please try again.");
+      console.log(error);
     }
   };
 
   return (
     <React.Fragment>
+      <Navbar />
       <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "90vh",
-        }}
+        h="calc(100vh - 70px)"
+        mx={"auto"}
+        textAlign={"center"}
+        bgColor={"#F9F9F9"}
       >
-        <Typography
-          variant="h4"
-          justifyContent={"center"}
-          display={"flex"}
-          marginBottom={"30px"}
-          
-        >
-          Register and start chatting!
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-          <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
-          <TextField id="input-with-sx" label="Name" variant="standard" onChange={(e) => setName(e.target.value)}/>
+        <Box marginBottom={"30px"} paddingTop={"50px"}>
+          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
+            Start your
+          </Text>
+          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
+            chat messaging
+          </Text>
+          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
+            experience today!
+          </Text>
         </Box>
 
-        {errorMessage && (
-          <Alert severity="error" sx={{ marginTop: '10px'}}>
-            {errorMessage}
-          </Alert>
-        )}
+        <Input
+          w="40%"
+          marginBottom={"30px"}
+          type="email"
+          placeholder="Enter email"
+          onChange={(e) => setEmail(e.target.value)}
+        ></Input>
+        {emailInUse && <p>Email is already in use.</p>}
+        <br />
+        <Input
+          w="40%"
+          marginBottom={"30px"}
+          type="text"
+          placeholder="Enter username"
+          onChange={(e) => setUsername(e.target.value)}
+        ></Input>
+        {usernameInUse && <p>Username is already in use.</p>}
 
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: "30px",
-          }}
-          onClick={handleRegistration}
-        >
-          Register
+        <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
+          <Input
+            type={show ? "text" : "password"}
+            placeholder="Enter password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={handleClick}>
+              {show ? "Hide" : "Show"}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+
+        <Button colorScheme="blue" onClick={handleRegistration}>
+          Sign up
         </Button>
       </Box>
     </React.Fragment>

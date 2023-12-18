@@ -5,53 +5,94 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "http://dinos3bucketdeploy.s3-website-ap-southeast-2.amazonaws.com",
-    methods: ["GET", "POST"]
-  }
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
 });
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const registeredUsers = [];
-const usernameSocketIDMapping = {};
+const {
+  signUp,
+  getUserID,
+  addUserToDatabase,
+  checkUsernameTaken,
+  checkEmailTaken,
+  signIn,
+  getUsername,
+  getUsernames
+} = require("./auth/firebase");
 
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/api/register", (req, res) => {
+app.post('/login', async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password
+  try {
+    await signIn(email, password)
+    res.status(200).json({ success: true, message: "User signed in" });
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Sign in unsuccessful" });
+  }
+  
+})
+
+app.post("/signup", async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
   const username = req.body.username;
-  // Username input validation
-  if (registeredUsers.includes(username.toLowerCase()) == false) {
-    console.log("User registered:", username);
-    registeredUsers.push(username.toLowerCase());
-    res.status(200).json({ success: true, message: "Registration successful" });
-  } else {
-    console.log("Username taken, please try again!");
-    res
-      .status(200)
-      .json({ success: false, message: "Username taken, please try again!" });
+
+  try {
+    const usernameTaken = await checkUsernameTaken(username)
+    if (usernameTaken) {
+      const emailTaken = await checkEmailTaken(email)
+      console.log(emailTaken)
+      if (usernameTaken && emailTaken) {
+        res.status(200).json({ success: false, message: "Username and email taken" });
+      } else {
+        res.status(200).json({ success: false, message: "Username taken" });
+      }
+    } else {
+      await signUp(email, password)
+      res.status(200).json({ success: true, message: "Signup successful" });
+      const getUserResponse = await getUserID()
+      const userID = getUserResponse.reloadUserInfo.localId
+      await addUserToDatabase(email, username, userID)
+      console.log('User added to database')
+    }
+  } catch (error) {
+    if (error.code == 'auth/email-already-in-use') {
+      res.status(200).json({ success: false, message: "Email taken" });
+    }
   }
 });
 
-app.get("/api/getUsername", (req, res) => {
-  var socketId = req.query.socketId;
-  var username = usernameSocketIDMapping[socketId];
-  console.log(username);
-  res.status(200).json({ username: username });
+app.get("/getUser", async (req, res) => {
+  try {
+    const getUserIDResponse = await getUserID()
+    const userID = getUserIDResponse.reloadUserInfo.localId
+    const getUsernameResponse = await getUsername(userID)
+    res.status(200).json({ success: true, id: userID, username: getUsernameResponse });
+  }
+  catch(error) {
+    console.log(error)
+  }
+  
+app.post('/getUsernames', async (req, res) => {
+  try {
+    const search = req.body.search
+    const username = req.body.username
+    const usernames = await getUsernames(search, username)
+    res.status(200).json({ success: true, usernames: usernames })
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
 })
-
-io.on("connection", (socket) => {
-  socket.on("chat message", (data) => {
-    io.emit("chat message", data);
-  });
-
-  socket.on("set username", (data) => {
-    var username = data.username;
-    registeredUsers.push(username.toLowerCase());
-    usernameSocketIDMapping[socket.id] = username;
-  });
-
-  //socket on disconnect, remove user from mapping
 });
 
 const PORT = process.env.PORT || 8080;
