@@ -113,4 +113,6 @@ const checkEmailTaken = async (email) => {
 
 
 
+
+
 module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn, getUsernames };

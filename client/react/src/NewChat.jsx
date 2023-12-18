@@ -17,25 +17,35 @@ import {
   Card,
   CardBody,
   Avatar,
-  Spacer
+  Spacer,
 } from "@chakra-ui/react";
 
 function NewChat() {
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
+
+  const handleStartChat = async () => {
+    try {
+    } catch (error) {}
+  };
 
   const handleSearch = async (search) => {
     try {
       if (search == "") {
         setUsernames([]);
       } else {
-        const getUserResponse = await axios.get('http://localhost:8080/getUser')
+        const getUserResponse = await axios.get(
+          "http://localhost:8080/getUser"
+        );
         const username = getUserResponse.data.username;
         setUsername(username);
-        const getUsernamesResponse = await axios.post("http://localhost:8080/getUsernames", {
-          search: search,
-          username: username
-        });
+        const getUsernamesResponse = await axios.post(
+          "http://localhost:8080/getUsernames",
+          {
+            search: search,
+            username: username,
+          }
+        );
         const usernames = getUsernamesResponse.data.usernames;
         setUsernames(usernames);
       }
@@ -75,12 +85,7 @@ function NewChat() {
           alignItems={"center"}
           justifyContent={"center"}
         >
-          <Box
-            w={"50%"}
-            h={"100%"}
-            border={"1px solid black"}
-            overflowY={"auto"}
-          >
+          <Box w={"50%"} h={"100%"} overflowY={"auto"}>
             {/* list of usernames here */}
             {usernames.map((username, index) => (
               <div key={index}>
@@ -90,16 +95,27 @@ function NewChat() {
                     bgColor={"white"}
                     h="80px"
                     justifyContent={"center"}
-                    
+                    borderRadius={"0px"}
                   >
-                    <Flex flexDirection={"row"} gap={5} marginLeft={'30px'}>
+                    <Flex flexDirection={"row"} gap={5} marginLeft={"30px"}>
                       <Avatar
                         name="Dan Abrahmov"
                         src="https://bit.ly/dan-abramov"
                       />
-                      <Heading size={'lg'} marginTop={'5px'}>{username}</Heading>
+                      <Heading size={"lg"} marginTop={"5px"}>
+                        {username}
+                      </Heading>
                       <Spacer></Spacer>
-                      <Button bg={'teal'} color={'white'} marginRight={'15px'} marginTop={'5px'} _hover={{ bg: "#009191" }}>Start chat</Button>
+                      <Button
+                        bg={"teal"}
+                        color={"white"}
+                        marginRight={"15px"}
+                        marginTop={"5px"}
+                        _hover={{ bg: "#009191" }}
+                        onClick={handleStartChat}
+                      >
+                        Start chat
+                      </Button>
                     </Flex>
                   </Card>
                 </VStack>
