@@ -83,8 +83,8 @@ const getUsernames = async (search, currentUserUsername) => {
     .map(doc => doc.data().username.toLowerCase())
     .filter(username => username.includes(searchLowerCase) && username !== currentUserUsername.toLowerCase());
 
-  filterUsernamesThatHasStartedChat(matchingUsernames, currentUserUsername);
-  return matchingUsernames;
+  const filteredUsernames = filterUsernamesThatHasStartedChat(matchingUsernames, currentUserUsername);
+  return filteredUsernames;
 };
 
 const filterUsernamesThatHasStartedChat = async (matchingUsernames, currentUserUsername) => {
@@ -97,6 +97,7 @@ const filterUsernamesThatHasStartedChat = async (matchingUsernames, currentUserU
     })
     const currentUserID = await getUserIDFromUsername(currentUserUsername)
     const arrayOfIDCurrentUserChattingWith = []
+    const arrayOfUsernameCurrentUserChattingWith = []
     arrayOfDocObjects.forEach((obj) => {
       if (currentUserID == obj.userID1 || currentUserID == obj.userID2) {
         if (currentUserID == obj.userID1) {
@@ -106,12 +107,14 @@ const filterUsernamesThatHasStartedChat = async (matchingUsernames, currentUserU
         }
       }
     })
-    console.log('Array of ID Dino chatting with', arrayOfIDCurrentUserChattingWith) //correct
-    //from currentUserUsername, get currentUserID done
-    //for each object in array, check if currentUserID matches userID1 or userID2
-    //if it matches either one, means the user is chatting with someone (other id). get that other id and translate back to username.
-    //remove username from matchingusernames
-    //return matchingusernames
+    for (const id of arrayOfIDCurrentUserChattingWith) {
+      const username = await getUsername(id);
+      arrayOfUsernameCurrentUserChattingWith.push(username)
+    }
+    const filteredUsernames = matchingUsernames.filter((username) => {
+      return !arrayOfUsernameCurrentUserChattingWith.includes(username)
+    })
+    return filteredUsernames
   }
   catch(error) {
     console.log(error)
