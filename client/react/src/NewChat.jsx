@@ -34,7 +34,7 @@ function NewChat() {
         clickedUsername: clickedUsername
       })
       if (response.data.success == true) {
-        navigate('/chat')
+        navigate('/chat', { state: { chattingWith: clickedUsername } });
       }
     } catch (error) {
       console.log(error)

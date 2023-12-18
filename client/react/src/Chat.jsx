@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Flex,
@@ -26,13 +27,20 @@ function Chat() {
   const [userID, setUserID] = useState("");
   //client's username
   const [username, setUsername] = useState("");
-  const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
-    useState([]);
+  const [usernamesClientChattingWith, setUsernamesClientChattingWith] = useState([]);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
-  const [chattingWith, setChattingWith] = useState('')
   const [searchInput, setSearchInput] = useState('');
+  const [chattingWith, setChattingWith] = useState('')
+  const location = useLocation();
+  const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
+
+  useEffect(() => {
+    if (newChattingWith) {
+      setChattingWith(newChattingWith);
+    }
+  }, [newChattingWith]);
 
   useEffect(() => {
     // Retrieve the chattingWith value from localStorage on component mount
