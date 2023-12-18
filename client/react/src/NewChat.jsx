@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 
 function NewChat() {
+  const [username, setUsername] = useState('')
   const [usernames, setUsernames] = useState([]);
 
   const handleSearch = async (search) => {
@@ -28,11 +29,14 @@ function NewChat() {
       if (search == "") {
         setUsernames([]);
       } else {
-        const url = "http://localhost:8080/getUsernames";
-        const response = await axios.post(url, {
+        const getUserResponse = await axios.get('http://localhost:8080/getUser')
+        const username = getUserResponse.data.username;
+        setUsername(username);
+        const getUsernamesResponse = await axios.post("http://localhost:8080/getUsernames", {
           search: search,
+          username: username
         });
-        const usernames = response.data.usernames;
+        const usernames = getUsernamesResponse.data.usernames;
         setUsernames(usernames);
       }
     } catch (error) {

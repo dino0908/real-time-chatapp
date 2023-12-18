@@ -62,13 +62,13 @@ const getUsername = async (userID) => {
   }
 }
 
-const getUsernames = async (search) => {
+const getUsernames = async (search, currentUserUsername) => {
   const colRef = collection(db, "users");
   const searchLowerCase = search.toLowerCase();
   const snapshot = await getDocs(colRef);
   const matchingUsernames = snapshot.docs
     .map(doc => doc.data().username.toLowerCase())
-    .filter(username => username.includes(searchLowerCase));
+    .filter(username => username.includes(searchLowerCase) && username !== currentUserUsername.toLowerCase());
 
   return matchingUsernames;
 };

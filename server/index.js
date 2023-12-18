@@ -58,7 +58,7 @@ app.post("/signup", async (req, res) => {
     } else {
       await signUp(email, password)
       res.status(200).json({ success: true, message: "Signup successful" });
-      const getUserResponse = await getUser()
+      const getUserResponse = await getUserID()
       const userID = getUserResponse.reloadUserInfo.localId
       await addUserToDatabase(email, username, userID)
       console.log('User added to database')
@@ -84,7 +84,8 @@ app.get("/getUser", async (req, res) => {
 app.post('/getUsernames', async (req, res) => {
   try {
     const search = req.body.search
-    const usernames = await getUsernames(search)
+    const username = req.body.username
+    const usernames = await getUsernames(search, username)
     res.status(200).json({ success: true, usernames: usernames })
   }
   catch(error) {
