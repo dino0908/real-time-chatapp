@@ -23,7 +23,8 @@ const {
   getUsernames,
   startChat,
   getUserIDFromUsername,
-  listOfUsernamesClientInActiveChatWith
+  listOfUsernamesClientInActiveChatWith,
+  deleteChat
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -122,6 +123,19 @@ app.post('/activeChats', async (req, res) => {
   }
   catch(error) {
     console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
+
+app.post('/deleteChat', async (req, res) => {
+  try {
+    const username1 = req.body.username1
+    const username2 = req.body.username2
+    const deleteChatResponse = await deleteChat(username1, username2)
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
   }
 })
 

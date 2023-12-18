@@ -17,9 +17,14 @@ import {
   Text,
   HStack,
   Button,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { BsEmojiSmile } from "react-icons/bs";
-
+import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
@@ -27,15 +32,29 @@ function Chat() {
   const [userID, setUserID] = useState("");
   //client's username
   const [username, setUsername] = useState("");
-  const [usernamesClientChattingWith, setUsernamesClientChattingWith] = useState([]);
+  const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
+    useState([]);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
-  const [searchInput, setSearchInput] = useState('');
-  const [chattingWith, setChattingWith] = useState('')
+  const [searchInput, setSearchInput] = useState("");
+  const [chattingWith, setChattingWith] = useState("");
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
 
+  const handleDeleteChat = async () => {
+    //username is client username, chattingwith is username of other party
+    try {
+      const url = 'http://localhost:8080/deleteChat'
+      const response = await axios.post(url, {
+        username1: username,
+        username2: chattingWith
+      })
+    }
+    catch(error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
     if (newChattingWith) {
       setChattingWith(newChattingWith);
@@ -44,19 +63,19 @@ function Chat() {
 
   useEffect(() => {
     // Retrieve the chattingWith value from localStorage on component mount
-    const storedChattingWith = localStorage.getItem('chattingWith');
+    const storedChattingWith = localStorage.getItem("chattingWith");
     if (storedChattingWith) {
       setChattingWith(storedChattingWith);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('chattingWith', chattingWith);
+    localStorage.setItem("chattingWith", chattingWith);
   }, [chattingWith]);
 
   const handleSendMessage = () => {
     const newMessage = message;
-    if (message != '') {
+    if (message != "") {
       setMessages([...messages, newMessage]);
       setMessage("");
     }
@@ -105,23 +124,29 @@ function Chat() {
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon></SearchIcon>
                   </InputLeftElement>
-                  <Input type="tel" placeholder="Search" bgColor={"white"} onChange={(e)=>setSearchInput(e.target.value)}/>
+                  <Input
+                    type="tel"
+                    placeholder="Search"
+                    bgColor={"white"}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                  />
                 </InputGroup>
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
-                {usernamesClientChattingWith.filter((username)=>username.toLowerCase().includes(searchInput.toLowerCase()))
-                .map((username, index) => (
-                  <ActiveChat
-                    key={index}
-                    username={username}
-                    onClick={(username) =>
-                      setChattingWith(username)
-                    }
-                  />
-                ))}
+                {usernamesClientChattingWith
+                  .filter((username) =>
+                    username.toLowerCase().includes(searchInput.toLowerCase())
+                  )
+                  .map((username, index) => (
+                    <ActiveChat
+                      key={index}
+                      username={username}
+                      onClick={(username) => setChattingWith(username)}
+                    />
+                  ))}
               </VStack>
             </Box>
           </Flex>
@@ -131,7 +156,7 @@ function Chat() {
             <Box flex={"10%"} margin={"30px"}>
               <Flex flexDirection={"column"} gap={3}>
                 <Heading>{chattingWith}</Heading>
-                <Flex flexDirection={"row"}>
+                <Flex flexDirection={"row"} marginRight={"30px"}>
                   <Box
                     w={"14px"}
                     h={"14px"}
@@ -141,6 +166,21 @@ function Chat() {
                     marginRight={"10px"}
                   ></Box>
                   <Text color={"#8a8a8a"}>Active now</Text>
+                  <Spacer></Spacer>
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      colorScheme="white"
+                      _hover={{ bg: "#F1F1F1" }}
+                    >
+                      <AiOutlineMore size={"25px"} color="black" />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem textColor={"red"} onClick={handleDeleteChat}>
+                        Delete chat
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
                 </Flex>
               </Flex>
             </Box>

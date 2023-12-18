@@ -212,6 +212,19 @@ const startChat = async (userID1, userID2) => {
   }
 };
 
+const deleteChat = async (username1, username2) => {
+  try {
+    const userID1 = await getUserIDFromUsername(username1)
+    const userID2 = await getUserIDFromUsername(username2)
+    //search through chats collection, find every doc, if it contains a userid1 and userid2 pair, delete the doc
+    const colRef = collection(db, 'chats')
+    
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   signUp,
   getUserID,
@@ -224,4 +237,5 @@ module.exports = {
   startChat,
   getUserIDFromUsername,
   listOfUsernamesClientInActiveChatWith,
+  deleteChat
 };
