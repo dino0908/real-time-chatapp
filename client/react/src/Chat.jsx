@@ -23,15 +23,12 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import { BsEmojiSmile } from "react-icons/bs";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
-  //client's userid
-  const [userID, setUserID] = useState("");
-  //client's username
-  const [username, setUsername] = useState("");
+  const [userID, setUserID] = useState(""); //client's userid
+  const [username, setUsername] = useState(""); //client's username
   const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
     useState([]);
   const [message, setMessage] = useState("");
@@ -74,7 +71,7 @@ function Chat() {
         username2: chattingWith,
       });
       fetchData();
-      setChattingWith('')
+      setChattingWith("");
     } catch (error) {
       console.log(error);
     }
@@ -163,19 +160,19 @@ function Chat() {
               <Flex flexDirection={"column"} gap={3}>
                 <Heading>{chattingWith}</Heading>
                 <Flex flexDirection={"row"} marginRight={"30px"}>
-                {chattingWith && (
-        <>
-          <Box
-            w={"14px"}
-            h={"14px"}
-            borderRadius={"7px"}
-            bgColor={"#29ff5a"}
-            marginTop={"5px"}
-            marginRight={"10px"}
-          ></Box>
-          <Text color={"#8a8a8a"}>Active now</Text>
-        </>
-      )}
+                  {chattingWith && (
+                    <>
+                      <Box
+                        w={"14px"}
+                        h={"14px"}
+                        borderRadius={"7px"}
+                        bgColor={"#29ff5a"}
+                        marginTop={"5px"}
+                        marginRight={"10px"}
+                      ></Box>
+                      <Text color={"#8a8a8a"}>Active now</Text>
+                    </>
+                  )}
                   <Spacer></Spacer>
                   <Menu>
                     <MenuButton
@@ -222,7 +219,7 @@ function Chat() {
                 {/* input portion */}
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
-                    <BsEmojiSmile size={25} />
+                    
                     <Input
                       placeholder="Enter message"
                       w={"80%"}
@@ -236,7 +233,7 @@ function Chat() {
                         }
                       }}
                     />
-                    <Button colorScheme="blue" onClick={handleSendMessage}>
+                    <Button colorScheme="blue" onClick={handleSendMessage} marginRight={'10px'}>
                       Send
                     </Button>
                   </HStack>
