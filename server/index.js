@@ -30,6 +30,18 @@ const {
 app.use(cors());
 app.use(bodyParser.json());
 
+io.on('connection', (socket) => {
+
+  socket.on('chat message', (data) => {
+    console.log('Received chat message:', data);
+    io.emit('chat message', data); // Broadcast the message to all connected clients
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 app.post('/login', async (req, res) => {
   const email = req.body.email;
   const password = req.body.password
@@ -140,7 +152,10 @@ app.post('/deleteChat', async (req, res) => {
   }
 })
 
+
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+

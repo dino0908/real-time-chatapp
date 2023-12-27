@@ -3,6 +3,7 @@ import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
 import { useLocation } from "react-router-dom";
+import { io } from 'socket.io-client'
 import {
   Box,
   Flex,
@@ -38,6 +39,18 @@ function Chat() {
   const [chattingWith, setChattingWith] = useState("");
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
+  const [socket, setSocket] = useState(null);
+
+  
+  useEffect(() => {
+    const newSocket = io('http://localhost:8080');
+    setSocket(newSocket);
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -95,13 +108,41 @@ function Chat() {
     localStorage.setItem("chattingWith", chattingWith);
   }, [chattingWith]);
 
+  //this is the client listener meant for listening for new message emits from server
+  useEffect(() => {
+    if (!socket) return;
+
+    // Set up a listener for the 'chat message' event
+    const handleIncomingMessage = (data) => {
+      // Handle incoming messages, e.g., update state with the new message
+      setMessages((prevMessages) => [...prevMessages, data]);
+    };
+
+    socket.on("chat message", handleIncomingMessage);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      socket.off("chat message", handleIncomingMessage);
+    };
+  }, [socket]);
+  
   const handleSendMessage = () => {
     const newMessage = message;
     if (message != "") {
       setMessages([...messages, newMessage]);
       setMessage("");
     }
+    if (socket && chattingWith) {
+      socket.emit('chat message', { 
+        text: message,
+        toUserID: chattingWith,
+        fromUserID: userID
+       });
+    }
+    
   };
+
+
 
   useEffect(() => {
     fetchData();
