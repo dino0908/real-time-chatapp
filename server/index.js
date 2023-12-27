@@ -32,9 +32,22 @@ app.use(bodyParser.json());
 
 io.on('connection', (socket) => {
 
-  socket.on('chat message', (data) => {
-    console.log('Received chat message:', data);
-    io.emit('chat message', data); // Broadcast the message to all connected clients
+  socket.on('chat message', async (data) => {
+    try {
+      console.log('Received chat message:', data);
+      const toUsername = data.toUsername
+      const toUserID = await getUserIDFromUsername(toUsername)
+      io.emit('chat message', {
+        text: data.text,
+        toUserID: toUserID,
+        fromUserID: data.fromUserID
+      });
+    }
+    catch(error) {
+      console.log(error)
+    }
+    //do processing of username in data to userid and emit back
+    
   });
 
   socket.on('disconnect', () => {

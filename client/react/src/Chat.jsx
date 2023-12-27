@@ -112,10 +112,12 @@ function Chat() {
   useEffect(() => {
     if (!socket) return;
 
-    // Set up a listener for the 'chat message' event
     const handleIncomingMessage = (data) => {
-      // Handle incoming messages, e.g., update state with the new message
-      setMessages((prevMessages) => [...prevMessages, data]);
+      if (userID == data.toUserID) {
+        const newMessage = data.text
+        setMessages([...messages, newMessage]);
+        setMessage(""); 
+      }
     };
 
     socket.on("chat message", handleIncomingMessage);
@@ -135,7 +137,7 @@ function Chat() {
     if (socket && chattingWith) {
       socket.emit('chat message', { 
         text: message,
-        toUserID: chattingWith,
+        toUsername: chattingWith, //server will convert this to id
         fromUserID: userID
        });
     }
