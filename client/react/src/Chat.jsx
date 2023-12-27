@@ -42,19 +42,44 @@ function Chat() {
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/getUser");
+      const userid = response.data.id;
+      const username = response.data.username;
+      setUserID(userid);
+      setUsername(username);
+
+      // get list of usernames client has active chat with
+      const activeChatsResponse = await axios.post(
+        "http://localhost:8080/activeChats",
+        {
+          username: username,
+        }
+      );
+
+      const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
+      setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const handleDeleteChat = async () => {
     //username is client username, chattingwith is username of other party
     try {
-      const url = 'http://localhost:8080/deleteChat'
-      const response = await axios.post(url, {
+      const url = "http://localhost:8080/deleteChat";
+      await axios.post(url, {
         username1: username,
-        username2: chattingWith
-      })
+        username2: chattingWith,
+      });
+      fetchData();
+      setChattingWith('')
+    } catch (error) {
+      console.log(error);
     }
-    catch(error) {
-      console.log(error)
-    }
-  }
+  };
+
   useEffect(() => {
     if (newChattingWith) {
       setChattingWith(newChattingWith);
@@ -82,26 +107,7 @@ function Chat() {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/getUser")
-      .then((response) => {
-        const userid = response.data.id;
-        const username = response.data.username;
-        setUserID(userid);
-        setUsername(username);
-        //get list of usernames client has active chat with
-        axios
-          .post("http://localhost:8080/activeChats", {
-            username: username,
-          })
-          .then((response) => {
-            const usernamesClientHasActiveChatWith = response.data.array;
-            setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
-          });
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -157,15 +163,19 @@ function Chat() {
               <Flex flexDirection={"column"} gap={3}>
                 <Heading>{chattingWith}</Heading>
                 <Flex flexDirection={"row"} marginRight={"30px"}>
-                  <Box
-                    w={"14px"}
-                    h={"14px"}
-                    borderRadius={"7px"}
-                    bgColor={"#29ff5a"}
-                    marginTop={"5px"}
-                    marginRight={"10px"}
-                  ></Box>
-                  <Text color={"#8a8a8a"}>Active now</Text>
+                {chattingWith && (
+        <>
+          <Box
+            w={"14px"}
+            h={"14px"}
+            borderRadius={"7px"}
+            bgColor={"#29ff5a"}
+            marginTop={"5px"}
+            marginRight={"10px"}
+          ></Box>
+          <Text color={"#8a8a8a"}>Active now</Text>
+        </>
+      )}
                   <Spacer></Spacer>
                   <Menu>
                     <MenuButton

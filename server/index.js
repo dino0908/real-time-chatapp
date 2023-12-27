@@ -131,7 +131,8 @@ app.post('/deleteChat', async (req, res) => {
   try {
     const username1 = req.body.username1
     const username2 = req.body.username2
-    const deleteChatResponse = await deleteChat(username1, username2)
+    await deleteChat(username1, username2)
+    res.status(200).json({ success: true, message: "Successfully deleted chat" });
   }
   catch(error) {
     console.log(error)
