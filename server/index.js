@@ -20,7 +20,11 @@ const {
   checkEmailTaken,
   signIn,
   getUsername,
-  getUsernames
+  getUsernames,
+  startChat,
+  getUserIDFromUsername,
+  listOfUsernamesClientInActiveChatWith,
+  deleteChat
 } = require("./auth/firebase");
 
 app.use(cors());
@@ -49,7 +53,6 @@ app.post("/signup", async (req, res) => {
     const usernameTaken = await checkUsernameTaken(username)
     if (usernameTaken) {
       const emailTaken = await checkEmailTaken(email)
-      console.log(emailTaken)
       if (usernameTaken && emailTaken) {
         res.status(200).json({ success: false, message: "Username and email taken" });
       } else {
@@ -81,6 +84,7 @@ app.get("/getUser", async (req, res) => {
     console.log(error)
   }
   
+
 app.post('/getUsernames', async (req, res) => {
   try {
     const search = req.body.search
@@ -94,6 +98,47 @@ app.post('/getUsernames', async (req, res) => {
   }
 })
 });
+
+app.post('/startChat', async (req, res) => {
+  try {
+    const username1 = req.body.username
+    const username2 = req.body.clickedUsername
+    const userID1 = await getUserIDFromUsername(username1)
+    const userID2 = await getUserIDFromUsername(username2)
+    startChat(userID1, userID2)
+    res.status(200).json({ success: true, message: 'New chat started'})
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
+
+app.post('/activeChats', async (req, res) => {
+  try {
+    const username = req.body.username
+    const userID = await getUserIDFromUsername(username)
+    const listOfUsernames = await listOfUsernamesClientInActiveChatWith(userID)
+    res.status(200).json({ success: false, message: "Unexpected error occured", array: listOfUsernames });
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
+
+app.post('/deleteChat', async (req, res) => {
+  try {
+    const username1 = req.body.username1
+    const username2 = req.body.username2
+    await deleteChat(username1, username2)
+    res.status(200).json({ success: true, message: "Successfully deleted chat" });
+  }
+  catch(error) {
+    console.log(error)
+    res.status(200).json({ success: false, message: "Unexpected error occured" });
+  }
+})
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {

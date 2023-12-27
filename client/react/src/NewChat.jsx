@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
@@ -23,10 +24,21 @@ import {
 function NewChat() {
   const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
+  const navigate = useNavigate();
 
-  const handleStartChat = async () => {
+  const handleStartChat = async (clickedUsername) => {
     try {
-    } catch (error) {}
+      const url = 'http://localhost:8080/startChat'
+      const response = await axios.post(url, {
+        username: username,
+        clickedUsername: clickedUsername
+      })
+      if (response.data.success == true) {
+        navigate('/chat', { state: { chattingWith: clickedUsername } });
+      }
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const handleSearch = async (search) => {
@@ -112,7 +124,7 @@ function NewChat() {
                         marginRight={"15px"}
                         marginTop={"5px"}
                         _hover={{ bg: "#009191" }}
-                        onClick={handleStartChat}
+                        onClick={() => handleStartChat(username)}
                       >
                         Start chat
                       </Button>

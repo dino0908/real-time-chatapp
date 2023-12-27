@@ -1,5 +1,9 @@
 const { initializeApp } = require("firebase/app");
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
+const {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} = require("firebase/auth");
 const {
   getFirestore,
   collection,
@@ -8,6 +12,8 @@ const {
   getDocs,
   query,
   where,
+  deleteDoc,
+  doc
 } = require("firebase/firestore");
 
 const firebaseConfig = {
@@ -42,8 +48,8 @@ const signUp = async (email, password) => {
 };
 
 const signIn = async (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password)
-}
+  return signInWithEmailAndPassword(auth, email, password);
+};
 
 const getUserID = async () => {
   return auth.currentUser;
@@ -51,68 +57,199 @@ const getUserID = async () => {
 
 const getUsername = async (userID) => {
   const colRef = collection(db, "users");
-  const q = query(colRef, where("UID", "==", userID))
+  const q = query(colRef, where("UID", "==", userID));
   try {
-    const snapshot = await getDocs(q)
+    const snapshot = await getDocs(q);
     const username = snapshot.docs[0].data().username;
-    return username
+    return username;
+  } catch (error) {
+    console.log(error);
   }
-  catch(error) {
-    console.log(error)
+};
+
+const getUserIDFromUsername = async (username) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("username", "==", username));
+  try {
+    const snapshot = await getDocs(q);
+    const userID = snapshot.docs[0].data().UID;
+    return userID;
+  } catch (error) {
+    console.log(error);
   }
-}
+};
+
+const listOfUsernamesClientInActiveChatWith = async (userID) => {
+  try {
+    const colRef = collection(db, "chats");
+    const snapshot = await getDocs(colRef);
+    const arrayOfAllActiveChats = [] //contains objects, each object has .userID1 and .userID2
+    const arrayOfIDsClientInActiveChatWith = []
+    const arrayOfUsernamesClientInActiveChatWith = []
+    snapshot.forEach((doc) => {
+      arrayOfAllActiveChats.push(doc.data())
+    });
+    arrayOfAllActiveChats.forEach((obj) => {
+      if (obj.userID1 == userID || obj.userID2 == userID) { //client in chat with someone
+        if (userID == obj.userID1) {
+          arrayOfIDsClientInActiveChatWith.push(obj.userID2)
+        } else {
+          arrayOfIDsClientInActiveChatWith.push(obj.userID1)
+        }
+      }
+    })
+    for (const id of arrayOfIDsClientInActiveChatWith) {
+      const username = await getUsername(id)
+      arrayOfUsernamesClientInActiveChatWith.push(username)
+    }
+    return arrayOfUsernamesClientInActiveChatWith
+    
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const getUsernames = async (search, currentUserUsername) => {
   const colRef = collection(db, "users");
   const searchLowerCase = search.toLowerCase();
   const snapshot = await getDocs(colRef);
   const matchingUsernames = snapshot.docs
-    .map(doc => doc.data().username.toLowerCase())
-    .filter(username => username.includes(searchLowerCase) && username !== currentUserUsername.toLowerCase());
+    .map((doc) => doc.data().username.toLowerCase())
+    .filter(
+      (username) =>
+        username.includes(searchLowerCase) &&
+        username !== currentUserUsername.toLowerCase()
+    );
 
-  return matchingUsernames;
+  const filteredUsernames = filterUsernamesThatHasStartedChat(
+    matchingUsernames,
+    currentUserUsername
+  );
+  return filteredUsernames;
+};
+
+const filterUsernamesThatHasStartedChat = async (
+  matchingUsernames,
+  currentUserUsername
+) => {
+  const colRef = collection(db, "chats");
+  try {
+    const snapshot = await getDocs(colRef);
+    const arrayOfDocObjects = [];
+    snapshot.docs.forEach((doc) => {
+      arrayOfDocObjects.push(doc.data());
+    });
+    const currentUserID = await getUserIDFromUsername(currentUserUsername);
+    const arrayOfIDCurrentUserChattingWith = [];
+    const arrayOfUsernameCurrentUserChattingWith = [];
+    arrayOfDocObjects.forEach((obj) => {
+      if (currentUserID == obj.userID1 || currentUserID == obj.userID2) {
+        if (currentUserID == obj.userID1) {
+          arrayOfIDCurrentUserChattingWith.push(obj.userID2);
+        } else {
+          arrayOfIDCurrentUserChattingWith.push(obj.userID1);
+        }
+      }
+    });
+    for (const id of arrayOfIDCurrentUserChattingWith) {
+      const username = await getUsername(id);
+      arrayOfUsernameCurrentUserChattingWith.push(username);
+    }
+    const filteredUsernames = matchingUsernames.filter((username) => {
+      return !arrayOfUsernameCurrentUserChattingWith.includes(username);
+    });
+    return filteredUsernames;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const checkUsernameTaken = async (username) => {
-    const colRef = collection(db, "users");
-    const q = query(colRef, where("username", "==", username))
-    var docCount = 0;
-    try {
-      const snapshot = await getDocs(q)
-      snapshot.docs.forEach((doc) => {
-        docCount++
-      })
-      if (docCount != 0) {
-        return true
-      }
-      return false
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("username", "==", username));
+  var docCount = 0;
+  try {
+    const snapshot = await getDocs(q);
+    snapshot.docs.forEach((doc) => {
+      docCount++;
+    });
+    if (docCount != 0) {
+      return true;
     }
-    catch(error) {
-      console.log(error)
-    }
+    return false;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const checkEmailTaken = async (email) => {
-  const colRef = collection(db, 'users')
-  const q = query(colRef, where('email', '==', email))
-  var docCount = 0
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("email", "==", email));
+  var docCount = 0;
   try {
-    const snapshot = await getDocs(q)
+    const snapshot = await getDocs(q);
     snapshot.docs.forEach((doc) => {
-      docCount++
-    })
+      docCount++;
+    });
     if (docCount != 0) {
-      return true
+      return true;
     }
-    return false
+    return false;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// add to db collections 'chat' the userID of both parties
+const startChat = async (userID1, userID2) => {
+  const colRef = collection(db, "chats");
+  try {
+    addDoc(colRef, {
+      userID1: userID1,
+      userID2: userID2,
+    });
+    console.log("new chat added to database");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteChat = async (username1, username2) => {
+  try {
+    const userID1 = await getUserIDFromUsername(username1)
+    const userID2 = await getUserIDFromUsername(username2)
+    const colRef = collection(db, 'chats')
+    const snapshot = await getDocs(colRef)
+    const arrayOfDocs = []
+    snapshot.docs.forEach((doc) => {
+      arrayOfDocs.push({ id: doc.id, ...doc.data() });
+    })
+    const docToDelete = arrayOfDocs.find((doc) => {
+      return (userID1 === doc.userID1 && userID2 === doc.userID2) || (userID1 == doc.userID2 && userID2 == doc.userID1);
+    });
+    if (docToDelete) {
+      const { id } = docToDelete //correct id
+      const docRef = doc(db, 'chats', id);
+      await deleteDoc(docRef)
+      console.log('Document deleted successfully')
+    }
   }
   catch(error) {
     console.log(error)
   }
 }
 
-
-
-
-
-module.exports = { signUp, getUserID, getUsername, addUserToDatabase, checkUsernameTaken, checkEmailTaken, signIn, getUsernames };
+module.exports = {
+  signUp,
+  getUserID,
+  getUsername,
+  addUserToDatabase,
+  checkUsernameTaken,
+  checkEmailTaken,
+  signIn,
+  getUsernames,
+  startChat,
+  getUserIDFromUsername,
+  listOfUsernamesClientInActiveChatWith,
+  deleteChat
+};

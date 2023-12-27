@@ -13,6 +13,8 @@ import {
     Text,
   } from "@chakra-ui/react";
 
+
+
 function Login() {
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
@@ -20,7 +22,11 @@ function Login() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
-  
+
+    const fastLogin = () => {
+      setEmail('dinokhaw@yahoo.com.sg')
+      setPassword('password')
+    }
     const handleLogin = async () => {
       try {
         const url = "http://localhost:8080/login";
@@ -62,6 +68,7 @@ function Login() {
           type="text"
           placeholder="Enter email"
           onChange={(e) => setEmail(e.target.value)}
+          value={email}
         ></Input>
 
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
@@ -69,6 +76,7 @@ function Login() {
             type={show ? "text" : "password"}
             placeholder="Enter password"
             onChange={(e) => setPassword(e.target.value)}
+            value={password}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -80,8 +88,8 @@ function Login() {
         <Button colorScheme="blue" onClick={handleLogin}>
           Login
         </Button>
-        <Button colorScheme="blue" onClick={()=>navigate('/chat')} marginLeft={'30px'}>
-          Developer Login
+        <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
+          fast login (dev)
         </Button>
       </Box>
     </React.Fragment>

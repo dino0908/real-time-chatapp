@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Flex,
@@ -16,37 +17,94 @@ import {
   Text,
   HStack,
   Button,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
-import { BsEmojiSmile } from "react-icons/bs";
-
+import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
 
 function Chat() {
-  const [userID, setUserID] = useState("");
-  const [username, setUsername] = useState("");
+  const [userID, setUserID] = useState(""); //client's userid
+  const [username, setUsername] = useState(""); //client's username
+  const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
+    useState([]);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
+  const [searchInput, setSearchInput] = useState("");
+  const [chattingWith, setChattingWith] = useState("");
+  const location = useLocation();
+  const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
 
-  const handleSendMessage = () => {
-    const newMessage = message;
-    setMessages([...messages, newMessage]);
-    setMessage("");
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/getUser");
+      const userid = response.data.id;
+      const username = response.data.username;
+      setUserID(userid);
+      setUsername(username);
+
+      // get list of usernames client has active chat with
+      const activeChatsResponse = await axios.post(
+        "http://localhost:8080/activeChats",
+        {
+          username: username,
+        }
+      );
+
+      const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
+      setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleDeleteChat = async () => {
+    //username is client username, chattingwith is username of other party
+    try {
+      const url = "http://localhost:8080/deleteChat";
+      await axios.post(url, {
+        username1: username,
+        username2: chattingWith,
+      });
+      fetchData();
+      setChattingWith("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    const url = "http://localhost:8080/getUser";
-    axios
-      .get(url)
-      .then((response) => {
-        const userid = response.data.id;
-        const username = response.data.username;
-        setUserID(userid);
-        setUsername(username);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    if (newChattingWith) {
+      setChattingWith(newChattingWith);
+    }
+  }, [newChattingWith]);
+
+  useEffect(() => {
+    // Retrieve the chattingWith value from localStorage on component mount
+    const storedChattingWith = localStorage.getItem("chattingWith");
+    if (storedChattingWith) {
+      setChattingWith(storedChattingWith);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chattingWith", chattingWith);
+  }, [chattingWith]);
+
+  const handleSendMessage = () => {
+    const newMessage = message;
+    if (message != "") {
+      setMessages([...messages, newMessage]);
+      setMessage("");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -69,21 +127,29 @@ function Chat() {
                   <InputLeftElement pointerEvents="none">
                     <SearchIcon></SearchIcon>
                   </InputLeftElement>
-                  <Input type="tel" placeholder="Search" bgColor={"white"} />
+                  <Input
+                    type="tel"
+                    placeholder="Search"
+                    bgColor={"white"}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                  />
                 </InputGroup>
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
-              <VStack spacing={0}>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
-                <ActiveChat></ActiveChat>
+              <VStack spacing={0} mt={3}>
+                {usernamesClientChattingWith
+                  .filter((username) =>
+                    username.toLowerCase().includes(searchInput.toLowerCase())
+                  )
+                  .map((username, index) => (
+                    <ActiveChat
+                      key={index}
+                      username={username}
+                      onClick={(username) => setChattingWith(username)}
+                    />
+                  ))}
               </VStack>
             </Box>
           </Flex>
@@ -92,17 +158,36 @@ function Chat() {
           <Flex flexDirection={"column"} height={"100%"}>
             <Box flex={"10%"} margin={"30px"}>
               <Flex flexDirection={"column"} gap={3}>
-                <Heading>Stuart</Heading>
-                <Flex flexDirection={"row"}>
-                  <Box
-                    w={"14px"}
-                    h={"14px"}
-                    borderRadius={"7px"}
-                    bgColor={"#29ff5a"}
-                    marginTop={"5px"}
-                    marginRight={"10px"}
-                  ></Box>
-                  <Text color={"#8a8a8a"}>Active now</Text>
+                <Heading>{chattingWith}</Heading>
+                <Flex flexDirection={"row"} marginRight={"30px"}>
+                  {chattingWith && (
+                    <>
+                      <Box
+                        w={"14px"}
+                        h={"14px"}
+                        borderRadius={"7px"}
+                        bgColor={"#29ff5a"}
+                        marginTop={"5px"}
+                        marginRight={"10px"}
+                      ></Box>
+                      <Text color={"#8a8a8a"}>Active now</Text>
+                    </>
+                  )}
+                  <Spacer></Spacer>
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      colorScheme="white"
+                      _hover={{ bg: "#F1F1F1" }}
+                    >
+                      <AiOutlineMore size={"25px"} color="black" />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem textColor={"red"} onClick={handleDeleteChat}>
+                        Delete chat
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
                 </Flex>
               </Flex>
             </Box>
@@ -134,7 +219,7 @@ function Chat() {
                 {/* input portion */}
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
-                    <BsEmojiSmile size={25} />
+                    
                     <Input
                       placeholder="Enter message"
                       w={"80%"}
@@ -148,7 +233,7 @@ function Chat() {
                         }
                       }}
                     />
-                    <Button colorScheme="blue" onClick={handleSendMessage}>
+                    <Button colorScheme="blue" onClick={handleSendMessage} marginRight={'10px'}>
                       Send
                     </Button>
                   </HStack>
