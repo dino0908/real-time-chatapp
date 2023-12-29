@@ -27,6 +27,8 @@ import {
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
 
+
+
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
   const [username, setUsername] = useState(""); //client's username
@@ -52,12 +54,15 @@ function Chat() {
     };
   }, []);
 
+  
+
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:8080/getUser");
       const userid = response.data.id;
       const username = response.data.username;
       setUserID(userid);
+      console.log('set username from fetchdata function')
       setUsername(username);
 
       // get list of usernames client has active chat with
@@ -96,18 +101,7 @@ function Chat() {
     }
   }, [newChattingWith]);
 
-  useEffect(() => {
-    // Retrieve the chattingWith value from localStorage on component mount
-    const storedChattingWith = localStorage.getItem("chattingWith");
-    if (storedChattingWith) {
-      setChattingWith(storedChattingWith);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("chattingWith", chattingWith);
-  }, [chattingWith]);
-
+ 
   //this is the client listener meant for listening for new message emits from server
   useEffect(() => {
     if (!socket) return;
@@ -141,10 +135,7 @@ function Chat() {
         fromUserID: userID
        });
     }
-    
   };
-
-
 
   useEffect(() => {
     fetchData();
@@ -180,6 +171,9 @@ function Chat() {
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
+            user : {username} <br />
+            chattingwith: {chattingWith} <br />
+            
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith

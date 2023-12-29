@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import backgroundImage from "../assets/backgroundImage.svg";
 import phone from "..//assets/phone.png";
 import Navbar from "./components/Navbar";
@@ -9,9 +9,11 @@ import {
   Center,
   Image,
 } from "@chakra-ui/react";
-
+import { sayHi } from './firebase';
 function Landing() {
-
+  useEffect(() => {
+    sayHi()
+  }, [])
   return (
     <div>
     <Navbar/>

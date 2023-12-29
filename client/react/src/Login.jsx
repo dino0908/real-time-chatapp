@@ -27,6 +27,11 @@ function Login() {
       setEmail('dinokhaw@yahoo.com.sg')
       setPassword('password')
     }
+
+    const stuartLogin = () => {
+      setEmail('stuartkhaw@yahoo.com.sg')
+      setPassword('password')
+    }
     const handleLogin = async () => {
       try {
         const url = "http://localhost:8080/login";
@@ -90,6 +95,9 @@ function Login() {
         </Button>
         <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
           fast login (dev)
+        </Button>
+        <Button colorScheme="blue" onClick={stuartLogin} marginLeft={'30px'}>
+          stuart login
         </Button>
       </Box>
     </React.Fragment>
