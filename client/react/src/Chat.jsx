@@ -59,13 +59,22 @@ function Chat() {
       const selectedUserID = await getUserIDFromUsername(selectedUsername)
       const result = await loadMessages(userID, selectedUserID)
       setAllMessages(result)
-      console.log(result)
     }
     catch(error) {
       console.log(error)
     }
     
   };
+
+  //new messages will change allMessages and force a rerender so messages are seen instantly without having to refresh
+  useEffect(() => {
+    const reloadMessages = async () => {
+      const selectedUserID = await getUserIDFromUsername(chattingWith)
+      const result = await loadMessages(userID, selectedUserID)
+      setAllMessages(result)
+    }
+    reloadMessages()
+  }, [allMessages])
 
   useEffect(() => {
     const newSocket = io("http://localhost:8080");
