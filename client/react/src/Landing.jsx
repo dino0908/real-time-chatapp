@@ -9,11 +9,9 @@ import {
   Center,
   Image,
 } from "@chakra-ui/react";
-import { sayHi } from './firebase';
+
 function Landing() {
-  useEffect(() => {
-    sayHi()
-  }, [])
+
   return (
     <div>
     <Navbar/>

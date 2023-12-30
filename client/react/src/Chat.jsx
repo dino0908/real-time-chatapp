@@ -26,8 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
-
-
+import { test } from './firebase'
 
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
@@ -43,7 +42,6 @@ function Chat() {
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
   const [socket, setSocket] = useState(null);
 
-  
   useEffect(() => {
     const newSocket = io('http://localhost:8080');
     setSocket(newSocket);
@@ -58,6 +56,7 @@ function Chat() {
 
   const fetchData = async () => {
     try {
+      test()
       const response = await axios.get("http://localhost:8080/getUser");
       const userid = response.data.id;
       const username = response.data.username;

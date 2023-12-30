@@ -13,6 +13,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import { signUp } from "./firebase";
+
 function Register() {
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
@@ -25,31 +27,28 @@ function Register() {
 
   const handleRegistration = async () => {
     try {
-      const url = "http://localhost:8080/signup";
-      const response = await axios.post(url, {
-        email: email,
-        password: password,
-        username: username,
-      });
-      if (response.data.success == true) {
-        navigate("/chat");
-      }
-      else if (response.data.success == false) {
-        if (response.data.message == "Username and email taken") {
-          setUsernameInUse(true)
-          setEmailInUse(true)
-        }
-        else if (response.data.message == 'Email taken') {
-          setEmailInUse(true)
-          setUsernameInUse(false)
-        }
-        else if (response.data.message == "Username taken") {
-          setUsernameInUse(true)
-          setEmailInUse(false)
-        }
+      const signUpResponse = await signUp(email, password)
+      console.log(signUpResponse)
+    
+      // if (response.data.success == true) {
+      //   navigate("/chat");
+      // }
+      // else if (response.data.success == false) {
+      //   if (response.data.message == "Username and email taken") {
+      //     setUsernameInUse(true)
+      //     setEmailInUse(true)
+      //   }
+      //   else if (response.data.message == 'Email taken') {
+      //     setEmailInUse(true)
+      //     setUsernameInUse(false)
+      //   }
+      //   else if (response.data.message == "Username taken") {
+      //     setUsernameInUse(true)
+      //     setEmailInUse(false)
+      //   }
         
         
-      }
+      // }
     } catch (error) {
       console.log(error);
     }

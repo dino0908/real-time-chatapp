@@ -13,6 +13,7 @@ import {
     Text,
   } from "@chakra-ui/react";
 
+  import { signIn } from "./firebase";
 
 
 function Login() {
@@ -34,16 +35,14 @@ function Login() {
     }
     const handleLogin = async () => {
       try {
-        const url = "http://localhost:8080/login";
-        const response = await axios.post(url, {
-          email: email,
-          password: password,
-        });
-        if (response.data.success == true) {
-          navigate("/chat");
-        } else {
-          setSignInUnsuccessful(true)
-        }
+        const signInResponse = await signIn(email, password)
+        // if (response.data.success == true) {
+        //   navigate("/chat");
+        // } else {
+        //   setSignInUnsuccessful(true)
+        // }
+        console.log(signInResponse)
+
       } catch (error) {
         console.log(error);
       }
