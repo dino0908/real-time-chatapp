@@ -65,34 +65,18 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res) => { //handle adding to db only, not signup
   const email = req.body.email;
   const password = req.body.password;
   const username = req.body.username;
+  const userID = req.body.userID
 
   try {
-    const usernameTaken = await checkUsernameTaken(username);
-    if (usernameTaken) {
-      const emailTaken = await checkEmailTaken(email);
-      if (usernameTaken && emailTaken) {
-        res
-          .status(200)
-          .json({ success: false, message: "Username and email taken" });
-      } else {
-        res.status(200).json({ success: false, message: "Username taken" });
-      }
-    } else {
-      await signUp(email, password);
-      res.status(200).json({ success: true, message: "Signup successful" });
-      const getUserResponse = await getUserID();
-      const userID = getUserResponse.reloadUserInfo.localId;
       await addUserToDatabase(email, username, userID);
       console.log("User added to database");
-    }
+      res.status(200).json({ success: true })
   } catch (error) {
-    if (error.code == "auth/email-already-in-use") {
-      res.status(200).json({ success: false, message: "Email taken" });
-    }
+    console.log(error)
   }
 });
 

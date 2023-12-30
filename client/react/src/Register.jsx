@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { signUp } from "./firebase";
+import { signUp, returnUserInfo } from "./firebase";
 
 function Register() {
   const [show, setShow] = React.useState(false);
@@ -28,8 +28,17 @@ function Register() {
   const handleRegistration = async () => {
     try {
       const signUpResponse = await signUp(email, password)
-      console.log(signUpResponse)
-    
+      const uid = await returnUserInfo()
+      navigate('/chat')
+      console.log('registration successful')
+      const url = "http://localhost:8080/signup"; //only for adding to db
+      const response = await axios.post(url, {
+        email: email,
+        password: password,
+        username: username,
+        userID: uid
+      });
+
       // if (response.data.success == true) {
       //   navigate("/chat");
       // }

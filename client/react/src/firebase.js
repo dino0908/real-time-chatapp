@@ -16,14 +16,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore();
 
-export const test = () => {
+export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
+        
         console.log('logging userid from firebase.js', uid);
         unsubscribe(); // Stop listening for further changes
-        resolve(uid); // Resolve the promise with the uid
+        resolve(user); // Resolve the promise with the uid
       } else {
         console.log('problem');
         unsubscribe(); // Stop listening for further changes

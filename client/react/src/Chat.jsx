@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
-import { test } from './firebase'
+import { getUsername, listOfUsernamesClientInActiveChatWith, returnUserInfo } from './firebase'
 
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
@@ -53,29 +53,15 @@ function Chat() {
   }, []);
 
   
-
   const fetchData = async () => {
     try {
-      const uid = await test()
-      console.log('anything', uid)
+      const response = await returnUserInfo()
+      const uid = response.uid
+      const username = await getUsername(uid)
+      setUsername(username)
       setUserID(uid)
-      // const response = await axios.get("http://localhost:8080/getUser");
-      // const userid = response.data.id;
-      // const username = response.data.username;
-      // setUserID(uid);
-      // console.log('set username from fetchdata function')
-      // setUsername(username);
-
-      // // get list of usernames client has active chat with
-      // const activeChatsResponse = await axios.post(
-      //   "http://localhost:8080/activeChats",
-      //   {
-      //     username: username,
-      //   }
-      // );
-
-      // const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
-      // setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+      const listofusernames = await listOfUsernamesClientInActiveChatWith(uid)
+      setUsernamesClientChattingWith(listofusernames)
     } catch (error) {
       console.log(error.message);
     }
@@ -176,7 +162,7 @@ function Chat() {
             chattingwith: {chattingWith} <br />
             
             <Box flex={"90%"} bgColor={"#edf9ff"}>
-              {/* <VStack spacing={0} mt={3}>
+              <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith
                   .filter((username) =>
                     username.toLowerCase().includes(searchInput.toLowerCase())
@@ -188,7 +174,7 @@ function Chat() {
                       onClick={(username) => setChattingWith(username)}
                     />
                   ))}
-              </VStack> */}
+              </VStack>
             </Box>
           </Flex>
         </Box>

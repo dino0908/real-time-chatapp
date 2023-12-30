@@ -21,22 +21,36 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
+import { getUsername, returnUserInfo, getUsernames, getUserIDFromUsername, startChat } from './firebase'
+
+
 function NewChat() {
   const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
   const navigate = useNavigate();
 
-  const handleStartChat = async (clickedUsername) => {
+  const handleStartChat = async (clickedUsername) => { //startChat(userID1, userID2); need userid of person clicked
+    // try {
+    //   const url = 'http://localhost:8080/startChat'
+    //   const response = await axios.post(url, {
+    //     username: username,
+    //     clickedUsername: clickedUsername
+    //   })
+    //   if (response.data.success == true) {
+    //     navigate('/chat', { state: { chattingWith: clickedUsername } });
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
     try {
-      const url = 'http://localhost:8080/startChat'
-      const response = await axios.post(url, {
-        username: username,
-        clickedUsername: clickedUsername
-      })
-      if (response.data.success == true) {
-        navigate('/chat', { state: { chattingWith: clickedUsername } });
-      }
-    } catch (error) {
+      const response = await returnUserInfo()
+      const userid1 = response.uid
+      const userid2 = await getUserIDFromUsername(clickedUsername)
+      await startChat(userid1, userid2)
+      console.log('chat started successfully')
+      navigate('/chat', { state: { chattingWith: clickedUsername } });
+    }
+    catch(error) {
       console.log(error)
     }
   };
@@ -46,20 +60,11 @@ function NewChat() {
       if (search == "") {
         setUsernames([]);
       } else {
-        const getUserResponse = await axios.get(
-          "http://localhost:8080/getUser"
-        );
-        const username = getUserResponse.data.username;
-        setUsername(username);
-        const getUsernamesResponse = await axios.post(
-          "http://localhost:8080/getUsernames",
-          {
-            search: search,
-            username: username,
-          }
-        );
-        const usernames = getUsernamesResponse.data.usernames;
-        setUsernames(usernames);
+        const response = await returnUserInfo()
+        const uid = response.uid
+        const username = await getUsername(uid)
+        const getUsernamesResponse = await getUsernames(search, username)
+        setUsernames(getUsernamesResponse)
       }
     } catch (error) {
       console.log(error);

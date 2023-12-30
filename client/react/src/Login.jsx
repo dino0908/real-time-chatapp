@@ -40,11 +40,12 @@ function Login() {
         // if (response.data.success == true) {
         //   navigate("/chat");
         // } else {
-        //   setSignInUnsuccessful(true)
+        //   
         // }
         console.log(signInResponse)
 
       } catch (error) {
+        setSignInUnsuccessful(true)
         console.log(error);
       }
     };
