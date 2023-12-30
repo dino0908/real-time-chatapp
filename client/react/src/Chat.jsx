@@ -56,24 +56,26 @@ function Chat() {
 
   const fetchData = async () => {
     try {
-      test()
-      const response = await axios.get("http://localhost:8080/getUser");
-      const userid = response.data.id;
-      const username = response.data.username;
-      setUserID(userid);
-      console.log('set username from fetchdata function')
-      setUsername(username);
+      const uid = await test()
+      console.log('anything', uid)
+      setUserID(uid)
+      // const response = await axios.get("http://localhost:8080/getUser");
+      // const userid = response.data.id;
+      // const username = response.data.username;
+      // setUserID(uid);
+      // console.log('set username from fetchdata function')
+      // setUsername(username);
 
-      // get list of usernames client has active chat with
-      const activeChatsResponse = await axios.post(
-        "http://localhost:8080/activeChats",
-        {
-          username: username,
-        }
-      );
+      // // get list of usernames client has active chat with
+      // const activeChatsResponse = await axios.post(
+      //   "http://localhost:8080/activeChats",
+      //   {
+      //     username: username,
+      //   }
+      // );
 
-      const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
-      setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+      // const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
+      // setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
     } catch (error) {
       console.log(error.message);
     }
@@ -170,11 +172,11 @@ function Chat() {
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
-            user : {username} <br />
+            user : {userID} <br />
             chattingwith: {chattingWith} <br />
             
             <Box flex={"90%"} bgColor={"#edf9ff"}>
-              <VStack spacing={0} mt={3}>
+              {/* <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith
                   .filter((username) =>
                     username.toLowerCase().includes(searchInput.toLowerCase())
@@ -186,7 +188,7 @@ function Chat() {
                       onClick={(username) => setChattingWith(username)}
                     />
                   ))}
-              </VStack>
+              </VStack> */}
             </Box>
           </Flex>
         </Box>

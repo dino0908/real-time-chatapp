@@ -36,6 +36,7 @@ function Login() {
     const handleLogin = async () => {
       try {
         const signInResponse = await signIn(email, password)
+        navigate('/chat')
         // if (response.data.success == true) {
         //   navigate("/chat");
         // } else {

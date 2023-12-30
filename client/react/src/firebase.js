@@ -17,16 +17,21 @@ const auth = getAuth(app);
 const db = getFirestore();
 
 export const test = () => {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const uid = user.uid;
-      console.log(uid)
-      // ...
-    } else {
-      console.log('problem')
-    }
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log('logging userid from firebase.js', uid);
+        unsubscribe(); // Stop listening for further changes
+        resolve(uid); // Resolve the promise with the uid
+      } else {
+        console.log('problem');
+        unsubscribe(); // Stop listening for further changes
+        reject(new Error('No user signed in'));
+      }
+    });
   });
-}
+};
 
 export const addUserToDatabase = async (email, username, userid) => {
   const colRef = collection(db, "users");
