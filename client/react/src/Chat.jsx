@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
 import { useLocation } from "react-router-dom";
-import { io } from 'socket.io-client'
+import { io } from "socket.io-client";
 import {
   Box,
   Flex,
@@ -26,7 +26,12 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
-import { getUsername, listOfUsernamesClientInActiveChatWith, returnUserInfo, deleteChat } from './firebase'
+import {
+  getUsername,
+  listOfUsernamesClientInActiveChatWith,
+  returnUserInfo,
+  deleteChat,
+} from "./firebase";
 
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
@@ -43,7 +48,7 @@ function Chat() {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:8080');
+    const newSocket = io("http://localhost:8080");
     setSocket(newSocket);
 
     // Clean up the socket connection when the component unmounts
@@ -52,16 +57,15 @@ function Chat() {
     };
   }, []);
 
-  
   const fetchData = async () => {
     try {
-      const response = await returnUserInfo()
-      const uid = response.uid
-      const username = await getUsername(uid)
-      setUsername(username)
-      setUserID(uid)
-      const listofusernames = await listOfUsernamesClientInActiveChatWith(uid)
-      setUsernamesClientChattingWith(listofusernames)
+      const response = await returnUserInfo();
+      const uid = response.uid;
+      const username = await getUsername(uid);
+      setUsername(username);
+      setUserID(uid);
+      const listofusernames = await listOfUsernamesClientInActiveChatWith(uid);
+      setUsernamesClientChattingWith(listofusernames);
     } catch (error) {
       console.log(error.message);
     }
@@ -69,12 +73,11 @@ function Chat() {
 
   const handleDeleteChat = async () => {
     try {
-      const username1 = username
-      const username2 = chattingWith
+      const username1 = username;
+      const username2 = chattingWith;
       await deleteChat(username1, username2);
-    }
-    catch(error) {
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -84,23 +87,25 @@ function Chat() {
     }
   }, [newChattingWith]);
 
- 
   //this is the client listener meant for listening for new message emits from server
   useEffect(() => {
     if (!socket) return;
-  
+
     const handleIncomingMessage = (data) => {
       if (userID === data.toUserID) {
         // Message is meant for this client
         console.log(data.text);
-        const newMessage = { text: data.text, senderUsername: data.fromUsername };
+        const newMessage = {
+          text: data.text,
+          senderUsername: data.fromUsername,
+        };
         setMessages([...messages, newMessage]);
         setMessage("");
       }
     };
-  
+
     socket.on("chat message", handleIncomingMessage);
-  
+
     // Clean up the event listener when the component unmounts
     return () => {
       socket.off("chat message", handleIncomingMessage);
@@ -112,22 +117,30 @@ function Chat() {
       socket.emit("setUserID", userID);
     }
   }, [socket, userID]);
-  
+
   const handleSendMessage = () => {
-    const newMessage = message;
-    if (message != "") {
+    if (message !== "") {
+      const newMessage = {
+        text: message,
+        senderUsername: username, // Include the sender's username
+      };
+  
+      // Update the state with the new message
       setMessages([...messages, newMessage]);
       setMessage("");
-    }
-    if (socket && chattingWith) {
-      socket.emit('chat message', { 
-        text: message,
-        toUsername: chattingWith, //server will convert this to id
-        fromUserID: userID,
-        fromUsername: username
-       });
+  
+      // Emit the message to the server
+      if (socket && chattingWith) {
+        socket.emit("chat message", {
+          text: message,
+          toUsername: chattingWith,
+          fromUserID: userID,
+          fromUsername: username,
+        });
+      }
     }
   };
+  
 
   useEffect(() => {
     fetchData();
@@ -166,7 +179,6 @@ function Chat() {
             userid : {userID} <br />
             user : {username} <br />
             chattingwith: {chattingWith} <br />
-            
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith
@@ -240,7 +252,10 @@ function Chat() {
                   {messages.map((message, index) => (
                     <div key={index}>
                       <Text margin={"30px"}>
-                      {message.senderUsername}: {message.text}
+                        {message.senderUsername === username
+                          ? "You"
+                          : message.senderUsername}
+                        : {message.text}
                       </Text>
                     </div>
                   ))}
@@ -249,7 +264,6 @@ function Chat() {
                 {/* input portion */}
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
-                    
                     <Input
                       placeholder="Enter message"
                       w={"80%"}
@@ -263,7 +277,11 @@ function Chat() {
                         }
                       }}
                     />
-                    <Button colorScheme="blue" onClick={handleSendMessage} marginRight={'10px'}>
+                    <Button
+                      colorScheme="blue"
+                      onClick={handleSendMessage}
+                      marginRight={"10px"}
+                    >
                       Send
                     </Button>
                   </HStack>
