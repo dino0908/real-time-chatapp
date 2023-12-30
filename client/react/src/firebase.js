@@ -79,6 +79,48 @@ export const getUserIDFromUsername = async (username) => {
     console.log(error);
   }
 };
+
+export const loadMessages = async (userid1, userid2) => {
+  //find chat document id with those 2 ids
+  const colRef = collection(db, 'chats');
+  
+  try {
+    const snapshot = await getDocs(colRef);
+
+    for (const document of snapshot.docs) {
+      const data = document.data();
+
+      if ((data.userID1 == userid1 && data.userID2 == userid2) || (data.userID1 == userid2 && data.userID2 == userid1)) {
+        const chatID = document.id;
+        const messagesRef = doc(db, "messages", chatID);
+        
+        try {
+          const messagesDoc = await getDoc(messagesRef);
+          const messagesData = messagesDoc.data();
+          
+          if (messagesData && messagesData.messages) {
+            // Resolve the promise with the messages data
+            return Promise.resolve(messagesData.messages);
+          } else {
+            // If messages document or messages array does not exist, resolve with an empty array
+            return Promise.resolve([]);
+          }
+        } catch (error) {
+          // Reject the promise if there's an error fetching messages
+          return Promise.reject(error);
+        }
+      }
+    }
+
+    // Resolve with an empty array if the chat document is not found
+    return Promise.resolve([]);
+  } catch (error) {
+    // Reject the promise if there's an error fetching chats
+    return Promise.reject(error);
+  }
+};
+
+
 //use both userid to find the correct document in chats collection, note down document id, that is the messages document id to add to
 export const sendMessage = async (newMessage, userid1, userid2) => {
   const colRef = collection(db, 'chats');

@@ -32,7 +32,8 @@ import {
   returnUserInfo,
   deleteChat,
   sendMessage,
-  getUserIDFromUsername
+  getUserIDFromUsername,
+  loadMessages
 } from "./firebase";
 
 function Chat() {
@@ -48,6 +49,21 @@ function Chat() {
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
   const [socket, setSocket] = useState(null);
+
+  const handleChatSelection = async (selectedUsername) => {
+    setChattingWith(selectedUsername);
+  
+    // Perform other actions...
+    try {
+      const selectedUserID = await getUserIDFromUsername(selectedUsername)
+      const allMessages = await loadMessages(userID, selectedUserID)
+      console.log(allMessages)
+    }
+    catch(error) {
+      console.log(error)
+    }
+    
+  };
 
   useEffect(() => {
     const newSocket = io("http://localhost:8080");
@@ -196,7 +212,7 @@ function Chat() {
                     <ActiveChat
                       key={index}
                       username={username}
-                      onClick={(username) => setChattingWith(username)}
+                      onClick={() => handleChatSelection(username)}
                     />
                   ))}
               </VStack>
