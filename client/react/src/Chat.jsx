@@ -49,6 +49,7 @@ function Chat() {
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
   const [socket, setSocket] = useState(null);
+  const [allMessages, setAllMessages] = useState([])
 
   const handleChatSelection = async (selectedUsername) => {
     setChattingWith(selectedUsername);
@@ -56,8 +57,9 @@ function Chat() {
     // Perform other actions...
     try {
       const selectedUserID = await getUserIDFromUsername(selectedUsername)
-      const allMessages = await loadMessages(userID, selectedUserID)
-      console.log(allMessages)
+      const result = await loadMessages(userID, selectedUserID)
+      setAllMessages(result)
+      console.log(result)
     }
     catch(error) {
       console.log(error)
@@ -272,16 +274,17 @@ function Chat() {
                   ref={messagesBoxRef}
                 >
                   {/* Render existing messages */}
-                  {messages.map((message, index) => (
-                    <div key={index}>
-                      {/* <Text margin={"30px"}>
-                        {message.senderUsername === username
-                          ? "You"
-                          : message.senderUsername}
-                        : {message.text}
-                      </Text> */}
-                    </div>
-                  ))}
+                  {allMessages.map((message, index) => (
+  <div key={index}>
+    <Text margin={"30px"}>
+      {message.senderUsername === username
+        ? "You"
+        : message.senderUsername}
+      : {message.text}
+    </Text>
+  </div>
+))}
+
                 </Box>
 
                 {/* input portion */}
