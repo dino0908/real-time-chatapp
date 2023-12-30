@@ -52,6 +52,7 @@ io.on("connection", (socket) => {
           text: data.text,
           toUserID: toUserID,
           fromUserID: data.fromUserID,
+          fromUsername: data.fromUsername
         });
       }
     } catch (error) {

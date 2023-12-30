@@ -93,7 +93,7 @@ function Chat() {
       if (userID === data.toUserID) {
         // Message is meant for this client
         console.log(data.text);
-        const newMessage = data.text;
+        const newMessage = { text: data.text, senderUsername: data.fromUsername };
         setMessages([...messages, newMessage]);
         setMessage("");
       }
@@ -123,7 +123,8 @@ function Chat() {
       socket.emit('chat message', { 
         text: message,
         toUsername: chattingWith, //server will convert this to id
-        fromUserID: userID
+        fromUserID: userID,
+        fromUsername: username
        });
     }
   };
@@ -239,7 +240,7 @@ function Chat() {
                   {messages.map((message, index) => (
                     <div key={index}>
                       <Text margin={"30px"}>
-                        {username}: {message}
+                      {message.senderUsername}: {message.text}
                       </Text>
                     </div>
                   ))}
