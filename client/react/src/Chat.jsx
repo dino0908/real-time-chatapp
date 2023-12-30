@@ -31,6 +31,8 @@ import {
   listOfUsernamesClientInActiveChatWith,
   returnUserInfo,
   deleteChat,
+  sendMessage,
+  getUserIDFromUsername
 } from "./firebase";
 
 function Chat() {
@@ -99,7 +101,9 @@ function Chat() {
           text: data.text,
           senderUsername: data.fromUsername,
         };
-        setMessages([...messages, newMessage]);
+        
+
+        // setMessages([...messages, newMessage]);
         setMessage("");
       }
     };
@@ -118,15 +122,18 @@ function Chat() {
     }
   }, [socket, userID]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message !== "") {
       const newMessage = {
         text: message,
         senderUsername: username, // Include the sender's username
       };
   
-      // Update the state with the new message
-      setMessages([...messages, newMessage]);
+      //newMessage need to be added to db
+      const userid1 = userID
+      const userid2 = await getUserIDFromUsername(chattingWith)
+      const sendMessageResponse = await sendMessage(newMessage, userid1, userid2)
+      // setMessages([...messages, newMessage]);
       setMessage("");
   
       // Emit the message to the server
@@ -251,12 +258,12 @@ function Chat() {
                   {/* Render existing messages */}
                   {messages.map((message, index) => (
                     <div key={index}>
-                      <Text margin={"30px"}>
+                      {/* <Text margin={"30px"}>
                         {message.senderUsername === username
                           ? "You"
                           : message.senderUsername}
                         : {message.text}
-                      </Text>
+                      </Text> */}
                     </div>
                   ))}
                 </Box>

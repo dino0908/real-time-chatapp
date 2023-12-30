@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAjn23hVp3olIo_g-UZo8HbPpPNJQFrc94",
@@ -14,19 +14,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
-const db = getFirestore();
+const db = getFirestore(app);
 
 export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
-        
-        console.log('logging userid from firebase.js', uid);
+        // const uid = user.uid;
         unsubscribe(); // Stop listening for further changes
-        resolve(user); // Resolve the promise with the uid
+        resolve(user);
       } else {
-        console.log('problem');
         unsubscribe(); // Stop listening for further changes
         reject(new Error('No user signed in'));
       }
@@ -82,6 +79,46 @@ export const getUserIDFromUsername = async (username) => {
     console.log(error);
   }
 };
+//use both userid to find the correct document in chats collection, note down document id, that is the messages document id to add to
+export const sendMessage = async (newMessage, userid1, userid2) => {
+  const colRef = collection(db, 'chats');
+
+  try {
+    const snapshot = await getDocs(colRef);
+
+    snapshot.forEach(async (document) => {
+      const data = document.data();
+
+      if ((data.userID1 == userid1 && data.userID2 == userid2) || (data.userID1 == userid2 && data.userID2 == userid1)) {
+        const chatID = document.id;
+        const messagesRef = doc(db, "messages", chatID);
+
+        try {
+          const messagesDoc = await getDoc(messagesRef);
+
+          if (messagesDoc.exists()) {
+            const currentMessages = messagesDoc.data().messages || [];
+            const updatedMessages = [...currentMessages, newMessage];
+
+            await setDoc(messagesRef, { messages: updatedMessages }, { merge: true });
+
+            console.log("Message added successfully");
+          } else {
+            // If messages document does not exist, create an empty document
+            await setDoc(messagesRef, { messages: [newMessage] });
+
+            console.log("Empty messages document created successfully");
+          }
+        } catch (error) {
+          console.error("Error updating messages:", error);
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching chats:", error);
+  }
+};
+
 
 export const listOfUsernamesClientInActiveChatWith = async (userID) => {
   try {
