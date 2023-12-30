@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { signUp, returnUserInfo } from "./firebase";
+import { signUp, returnUserInfo, addUserToDatabase } from "./firebase";
 
 function Register() {
   const [show, setShow] = React.useState(false);
@@ -27,37 +27,13 @@ function Register() {
 
   const handleRegistration = async () => {
     try {
-      const signUpResponse = await signUp(email, password)
-      const uid = await returnUserInfo()
+      await signUp(email, password)
+      const response = await returnUserInfo()
+      const uid = response.uid
       navigate('/chat')
       console.log('registration successful')
-      const url = "http://localhost:8080/signup"; //only for adding to db
-      const response = await axios.post(url, {
-        email: email,
-        password: password,
-        username: username,
-        userID: uid
-      });
-
-      // if (response.data.success == true) {
-      //   navigate("/chat");
-      // }
-      // else if (response.data.success == false) {
-      //   if (response.data.message == "Username and email taken") {
-      //     setUsernameInUse(true)
-      //     setEmailInUse(true)
-      //   }
-      //   else if (response.data.message == 'Email taken') {
-      //     setEmailInUse(true)
-      //     setUsernameInUse(false)
-      //   }
-      //   else if (response.data.message == "Username taken") {
-      //     setUsernameInUse(true)
-      //     setEmailInUse(false)
-      //   }
-        
-        
-      // }
+      await addUserToDatabase(email, username, uid);
+      console.log('adding to db successful')
     } catch (error) {
       console.log(error);
     }

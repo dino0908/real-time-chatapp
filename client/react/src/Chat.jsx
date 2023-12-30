@@ -158,7 +158,8 @@ function Chat() {
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
-            user : {userID} <br />
+            userid : {userID} <br />
+            user : {username} <br />
             chattingwith: {chattingWith} <br />
             
             <Box flex={"90%"} bgColor={"#edf9ff"}>
