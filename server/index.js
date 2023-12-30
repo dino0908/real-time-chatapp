@@ -31,27 +31,48 @@ import {
 app.use(cors());
 app.use(json());
 
+const userSocketMap = {};
+
 io.on("connection", (socket) => {
+  socket.on("setUserID", (userID) => {
+    // Associate the socket ID with the user ID
+    userSocketMap[userID] = socket.id;
+  });
+
   socket.on("chat message", async (data) => {
     try {
       console.log("Received chat message:", data);
       const toUsername = data.toUsername;
       const toUserID = await getUserIDFromUsername(toUsername);
-      io.emit("chat message", {
-        text: data.text,
-        toUserID: toUserID,
-        fromUserID: data.fromUserID,
-      });
+
+      // Emit the message directly to the specific recipient's socket
+      const recipientSocketID = userSocketMap[toUserID];
+      if (recipientSocketID) {
+        io.to(recipientSocketID).emit("chat message", {
+          text: data.text,
+          toUserID: toUserID,
+          fromUserID: data.fromUserID,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
-    //do processing of username in data to userid and emit back
   });
 
   socket.on("disconnect", () => {
+    // Remove the mapping when a user disconnects
+    const disconnectedUserID = Object.keys(userSocketMap).find(
+      (key) => userSocketMap[key] === socket.id
+    );
+    if (disconnectedUserID) {
+      delete userSocketMap[disconnectedUserID];
+    }
+
     console.log("User disconnected");
   });
 });
+
+
 
 app.post("/login", async (req, res) => {
   const email = req.body.email;
@@ -147,7 +168,7 @@ app.post("/deleteChat", async (req, res) => {
   try {
     const username1 = req.body.username1;
     const username2 = req.body.username2;
-    await deleteChat(username1, username2);
+    
     res
       .status(200)
       .json({ success: true, message: "Successfully deleted chat" });

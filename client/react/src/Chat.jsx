@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
-import { getUsername, listOfUsernamesClientInActiveChatWith, returnUserInfo } from './firebase'
+import { getUsername, listOfUsernamesClientInActiveChatWith, returnUserInfo, deleteChat } from './firebase'
 
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
@@ -68,17 +68,13 @@ function Chat() {
   };
 
   const handleDeleteChat = async () => {
-    //username is client username, chattingwith is username of other party
     try {
-      const url = "http://localhost:8080/deleteChat";
-      await axios.post(url, {
-        username1: username,
-        username2: chattingWith,
-      });
-      fetchData();
-      setChattingWith("");
-    } catch (error) {
-      console.log(error);
+      const username1 = username
+      const username2 = chattingWith
+      await deleteChat(username1, username2);
+    }
+    catch(error) {
+      console.log(error)
     }
   };
 
@@ -92,22 +88,30 @@ function Chat() {
   //this is the client listener meant for listening for new message emits from server
   useEffect(() => {
     if (!socket) return;
-
+  
     const handleIncomingMessage = (data) => {
-      if (userID == data.toUserID) {
-        const newMessage = data.text
+      if (userID === data.toUserID) {
+        // Message is meant for this client
+        console.log(data.text);
+        const newMessage = data.text;
         setMessages([...messages, newMessage]);
-        setMessage(""); 
+        setMessage("");
       }
     };
-
+  
     socket.on("chat message", handleIncomingMessage);
-
+  
     // Clean up the event listener when the component unmounts
     return () => {
       socket.off("chat message", handleIncomingMessage);
     };
-  }, [socket]);
+  }, [socket, userID, messages]);
+
+  useEffect(() => {
+    if (socket && userID) {
+      socket.emit("setUserID", userID);
+    }
+  }, [socket, userID]);
   
   const handleSendMessage = () => {
     const newMessage = message;
