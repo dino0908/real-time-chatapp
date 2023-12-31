@@ -225,9 +225,6 @@ useEffect(() => {
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
-            userid : {userID} <br />
-            user : {username} <br />
-            chattingwith: {chattingWith} <br />
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith

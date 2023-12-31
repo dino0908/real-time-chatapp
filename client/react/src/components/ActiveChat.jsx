@@ -22,7 +22,7 @@ function ActiveChat({ username, onClick }) {
         <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
         <Flex flexDirection={"column"} marginLeft={"10px"}>
           <Text as={"b"}>{username}</Text>
-          <Text>recent message</Text>
+          {/* <Text>recent message</Text> */}
         </Flex>
       </Flex>
       
