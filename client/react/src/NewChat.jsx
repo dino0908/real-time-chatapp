@@ -25,23 +25,10 @@ import { getUsername, returnUserInfo, getUsernames, getUserIDFromUsername, start
 
 
 function NewChat() {
-  const [username, setUsername] = useState("");
   const [usernames, setUsernames] = useState([]);
   const navigate = useNavigate();
 
-  const handleStartChat = async (clickedUsername) => { //startChat(userID1, userID2); need userid of person clicked
-    // try {
-    //   const url = 'http://localhost:8080/startChat'
-    //   const response = await axios.post(url, {
-    //     username: username,
-    //     clickedUsername: clickedUsername
-    //   })
-    //   if (response.data.success == true) {
-    //     navigate('/chat', { state: { chattingWith: clickedUsername } });
-    //   }
-    // } catch (error) {
-    //   console.log(error)
-    // }
+  const handleStartChat = async (clickedUsername) => {
     try {
       const response = await returnUserInfo()
       const userid1 = response.uid
