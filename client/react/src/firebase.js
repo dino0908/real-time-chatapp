@@ -21,11 +21,10 @@ export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // const uid = user.uid;
-        unsubscribe(); // Stop listening for further changes
+        unsubscribe();
         resolve(user);
       } else {
-        unsubscribe(); // Stop listening for further changes
+        unsubscribe();
         reject(new Error('No user signed in'));
       }
     });
@@ -81,7 +80,7 @@ export const getUserIDFromUsername = async (username) => {
       return userID;
     } else {
       console.log("User not found");
-      return null;  // or throw an error if you prefer
+      return null;
     }
   } catch (error) {
     console.log(error);
@@ -89,87 +88,60 @@ export const getUserIDFromUsername = async (username) => {
 };
 
 export const loadMessages = async (userid1, userid2) => {
-  //find chat document id with those 2 ids
   const colRef = collection(db, 'chats');
-  
   try {
     console.log('reading document: firebase.js loadmessage function')
     const snapshot = await getDocs(colRef);
-
     for (const document of snapshot.docs) {
       const data = document.data();
-
       if ((data.userID1 == userid1 && data.userID2 == userid2) || (data.userID1 == userid2 && data.userID2 == userid1)) {
         const chatID = document.id;
         const messagesRef = doc(db, "messages", chatID);
-        
         try {
           console.log('reading document: firebase.js loadmessage function');
           const messagesDoc = await getDoc(messagesRef);
           const messagesData = messagesDoc.data();
-          
           if (messagesData && messagesData.messages) {
-            // Resolve the promise with the messages data
             return Promise.resolve(messagesData.messages);
           } else {
-            // If messages document or messages array does not exist, resolve with an empty array
             return Promise.resolve([]);
           }
         } catch (error) {
-          // Reject the promise if there's an error fetching messages
           return Promise.reject(error);
         }
       }
     }
-
-    // Resolve with an empty array if the chat document is not found
     return Promise.resolve([]);
   } catch (error) {
-    // Reject the promise if there's an error fetching chats
     return Promise.reject(error);
   }
 };
 
-
-//use both userid to find the correct document in chats collection, note down document id, that is the messages document id to add to
 export const sendMessage = async (newMessage, userid1, userid2) => {
   const colRef = collection(db, 'chats');
-
   try {
-    console.log('reading document: firebase.js sendmessage function')
     const snapshot = await getDocs(colRef);
-
     snapshot.forEach(async (document) => {
       const data = document.data();
-
       if ((data.userID1 == userid1 && data.userID2 == userid2) || (data.userID1 == userid2 && data.userID2 == userid1)) {
         const chatID = document.id;
         const messagesRef = doc(db, "messages", chatID);
-
         try {
-          console.log('reading document: firebase.js sendmessage function')
           const messagesDoc = await getDoc(messagesRef);
-
           if (messagesDoc.exists()) {
             const currentMessages = messagesDoc.data().messages || [];
             const updatedMessages = [...currentMessages, newMessage];
-
             await setDoc(messagesRef, { messages: updatedMessages }, { merge: true });
-
-            console.log("Message added successfully");
           } else {
-            // If messages document does not exist, create an empty document
             await setDoc(messagesRef, { messages: [newMessage] });
-
-            console.log("Empty messages document created successfully");
           }
         } catch (error) {
-          console.error("Error updating messages:", error);
+          console.log(error)
         }
       }
     });
   } catch (error) {
-    console.error("Error fetching chats:", error);
+    console.log(error)
   }
 };
 
@@ -177,16 +149,15 @@ export const sendMessage = async (newMessage, userid1, userid2) => {
 export const listOfUsernamesClientInActiveChatWith = async (userID) => {
   try {
     const colRef = collection(db, "chats");
-    console.log('reading document: firebase.js listofusernamesclientinactivechatwith function')
     const snapshot = await getDocs(colRef);
-    const arrayOfAllActiveChats = [] //contains objects, each object has .userID1 and .userID2
+    const arrayOfAllActiveChats = []
     const arrayOfIDsClientInActiveChatWith = []
     const arrayOfUsernamesClientInActiveChatWith = []
     snapshot.forEach((doc) => {
       arrayOfAllActiveChats.push(doc.data())
     });
     arrayOfAllActiveChats.forEach((obj) => {
-      if (obj.userID1 == userID || obj.userID2 == userID) { //client in chat with someone
+      if (obj.userID1 == userID || obj.userID2 == userID) {
         if (userID == obj.userID1) {
           arrayOfIDsClientInActiveChatWith.push(obj.userID2)
         } else {
@@ -208,7 +179,6 @@ export const listOfUsernamesClientInActiveChatWith = async (userID) => {
 export const getUsernames = async (search, currentUserUsername) => {
   const colRef = collection(db, "users");
   const searchLowerCase = search.toLowerCase();
-  console.log('reading document: firebase.js getusernames function')
   const snapshot = await getDocs(colRef);
   const matchingUsernames = snapshot.docs
     .map((doc) => doc.data().username.toLowerCase())
@@ -231,7 +201,6 @@ export const filterUsernamesThatHasStartedChat = async (
 ) => {
   const colRef = collection(db, "chats");
   try {
-    console.log('reading document: firebase.js filterusernamesthathasstartedchat function')
     const snapshot = await getDocs(colRef);
     const arrayOfDocObjects = [];
     snapshot.docs.forEach((doc) => {
@@ -267,7 +236,6 @@ export const checkUsernameTaken = async (username) => {
   const q = query(colRef, where("username", "==", username));
   var docCount = 0;
   try {
-    console.log('reading document: firebase.js checkusernametaken function')
     const snapshot = await getDocs(q);
     snapshot.docs.forEach((doc) => {
       docCount++;
@@ -286,7 +254,6 @@ export const checkEmailTaken = async (email) => {
   const q = query(colRef, where("email", "==", email));
   var docCount = 0;
   try {
-    console.log('reading document: firebase.js checkemailtaken function')
     const snapshot = await getDocs(q);
     snapshot.docs.forEach((doc) => {
       docCount++;
@@ -300,7 +267,7 @@ export const checkEmailTaken = async (email) => {
   }
 };
 
-// add to db collections 'chat' the userID of both parties
+//Add the userID of both parties to db collection 'chats' 
 export const startChat = async (userID1, userID2) => {
   const colRef = collection(db, "chats");
   try {
@@ -308,7 +275,6 @@ export const startChat = async (userID1, userID2) => {
       userID1: userID1,
       userID2: userID2,
     });
-    console.log("new chat added to database");
   } catch (error) {
     console.log(error);
   }
@@ -319,7 +285,6 @@ export const deleteChat = async (username1, username2) => {
     const userID1 = await getUserIDFromUsername(username1)
     const userID2 = await getUserIDFromUsername(username2)
     const colRef = collection(db, 'chats')
-    console.log('reading document: firebase.js deletechat function')
     const snapshot = await getDocs(colRef)
     const arrayOfDocs = []
     snapshot.docs.forEach((doc) => {
@@ -329,10 +294,9 @@ export const deleteChat = async (username1, username2) => {
       return (userID1 === doc.userID1 && userID2 === doc.userID2) || (userID1 == doc.userID2 && userID2 == doc.userID1);
     });
     if (docToDelete) {
-      const { id } = docToDelete //correct id
+      const { id } = docToDelete
       const docRef = doc(db, 'chats', id);
       await deleteDoc(docRef)
-      console.log('Document deleted successfully')
     }
   }
   catch(error) {

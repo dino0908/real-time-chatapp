@@ -1,30 +1,27 @@
 import express from "express";
-const app = express();
+import cors from "cors";
 import { createServer } from "http";
-const server = createServer(app);
 import { Server } from "socket.io";
 import pkg from 'body-parser';
+
+const { json } = pkg;
+const app = express();
+const server = createServer(app);
+const userSocketMap = {};
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
-const { json } = pkg;
-import cors from "cors";
-
 
 app.use(cors());
 app.use(json());
 
-const userSocketMap = {};
-
 io.on("connection", (socket) => {
   socket.on("setUserID", (userID) => {
-    // Associate the socket ID with the user ID
     userSocketMap[userID] = socket.id;
   });
-
   socket.on("chat message", async (data) => {
     try {
       console.log("Received chat message:", data);
@@ -46,15 +43,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // Remove the mapping when a user disconnects
     const disconnectedUserID = Object.keys(userSocketMap).find(
       (key) => userSocketMap[key] === socket.id
     );
     if (disconnectedUserID) {
       delete userSocketMap[disconnectedUserID];
     }
-
-    console.log("User disconnected");
   });
 });
 

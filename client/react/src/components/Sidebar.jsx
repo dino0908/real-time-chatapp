@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Avatar, VStack, Button, Divider } from "@chakra-ui/react";
+import { Box, Avatar, VStack, Button } from "@chakra-ui/react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
+
 function Sidebar() {
   const navigate = useNavigate();
   return (

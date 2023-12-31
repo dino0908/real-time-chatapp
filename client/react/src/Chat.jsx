@@ -55,7 +55,7 @@ function Chat() {
       clearTimeout(timer);
       timer = setTimeout(() => func(...args), delay);
     };
-  }
+  };
   const reloadMessages = async () => {
     const selectedUserID = await getUserIDFromUsername(chattingWith);
     if (selectedUserID) {
@@ -67,17 +67,17 @@ function Chat() {
       }
     }
   };
-  
-  const [debouncedReloadMessages] = useState(() => debounce(reloadMessages, 500));
-//new messages will change allMessages and force a rerender so messages are seen instantly without having to refresh
-useEffect(() => {
-  debouncedReloadMessages();
-}, [chattingWith, userID, allMessages]);
+
+  const [debouncedReloadMessages] = useState(() =>
+    debounce(reloadMessages, 500)
+  );
+
+  useEffect(() => {
+    debouncedReloadMessages();
+  }, [chattingWith, userID, allMessages]);
 
   const handleChatSelection = async (selectedUsername) => {
     setChattingWith(selectedUsername);
-
-    // Perform other actions...
     try {
       const selectedUserID = await getUserIDFromUsername(selectedUsername);
       const result = await loadMessages(userID, selectedUserID);
@@ -90,9 +90,6 @@ useEffect(() => {
   const arraysAreEqual = (arr1, arr2) => {
     return JSON.stringify(arr1) === JSON.stringify(arr2);
   };
-
-  
-  
 
   useEffect(() => {
     const newSocket = io("http://localhost:8080");
@@ -139,7 +136,7 @@ useEffect(() => {
     }
   }, [newChattingWith]);
 
-  //this is the client listener meant for listening for new message emits from server
+  //Client listener, listening for new messages emits from server
   useEffect(() => {
     if (!socket || !userID) return;
 
@@ -224,7 +221,6 @@ useEffect(() => {
                 </InputGroup>
               </Stack>
             </Flex>
-            {/* bottom part with active chats */}
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith
@@ -282,11 +278,8 @@ useEffect(() => {
             <Center>
               <Divider border={"1px solid #cccccc"} w={"90%"}></Divider>
             </Center>
-
-            {/* chat display with input to type messages */}
             <Box flex={"90%"}>
               <Flex flexDirection={"column"} h="100%">
-                {/* chat display */}
                 <Box
                   flex={"85%"}
                   borderBottom={"1px solid black"}
@@ -294,7 +287,6 @@ useEffect(() => {
                   maxHeight={"75vh"}
                   ref={messagesBoxRef}
                 >
-                  {/* Render existing messages */}
                   {allMessages.map((message, index) => (
                     <div key={index}>
                       <Text margin={"30px"}>
@@ -306,8 +298,6 @@ useEffect(() => {
                     </div>
                   ))}
                 </Box>
-
-                {/* input portion */}
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
                     <Input
