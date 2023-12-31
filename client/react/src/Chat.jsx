@@ -36,8 +36,8 @@ import {
 } from "./firebase";
 
 function Chat() {
-  const [userID, setUserID] = useState(""); //client's userid
-  const [username, setUsername] = useState(""); //client's username
+  const [userID, setUserID] = useState("");
+  const [username, setUsername] = useState("");
   const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
     useState([]);
   const [message, setMessage] = useState("");
@@ -49,6 +49,7 @@ function Chat() {
   const [socket, setSocket] = useState(null);
   const [allMessages, setAllMessages] = useState([]);
 
+  
   const debounce = (func, delay) => {
     let timer;
     return function (...args) {
@@ -125,16 +126,16 @@ function Chat() {
       const username1 = username;
       const username2 = chattingWith;
       await deleteChat(username1, username2);
+      const listofusernames = await listOfUsernamesClientInActiveChatWith(
+        userID
+      );
+      setUsernamesClientChattingWith(listofusernames);
+      setChattingWith('')
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    if (newChattingWith) {
-      setChattingWith(newChattingWith);
-    }
-  }, [newChattingWith]);
 
   //Client listener, listening for new messages emits from server
   useEffect(() => {
@@ -198,7 +199,7 @@ function Chat() {
 
   return (
     <div>
-      <Sidebar></Sidebar>
+      <Sidebar tab={'chat'}></Sidebar>
       <Flex
         marginLeft="100px" //sidebar width is 100px
         flexDirection={"row"}

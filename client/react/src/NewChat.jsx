@@ -56,7 +56,7 @@ function NewChat() {
 
   return (
     <div>
-      <Sidebar></Sidebar>
+      <Sidebar tab={'newchat'}></Sidebar>
       <Flex marginLeft={"100px"} flexDirection={"column"} h={"100vh"}>
         <Flex flex={"20%"} bgColor={"#def4ff"}>
           <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
