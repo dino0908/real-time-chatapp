@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   Box,
   InputGroup,
   Input,
-  InputRightElement,
   InputLeftElement,
   Button,
-  Text,
   Flex,
   Stack,
   Heading,
   VStack,
   Card,
-  CardBody,
   Avatar,
   Spacer,
 } from "@chakra-ui/react";

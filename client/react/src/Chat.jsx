@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
 import { useLocation } from "react-router-dom";
@@ -188,6 +187,7 @@ useEffect(() => {
         socket.emit("chat message", {
           text: message,
           toUsername: chattingWith,
+          toUserID: userid2,
           fromUserID: userID,
           fromUsername: username,
         });
