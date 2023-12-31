@@ -44,12 +44,9 @@ function Chat() {
   const messagesBoxRef = useRef();
   const [searchInput, setSearchInput] = useState("");
   const [chattingWith, setChattingWith] = useState("");
-  const location = useLocation();
-  const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
   const [socket, setSocket] = useState(null);
   const [allMessages, setAllMessages] = useState([]);
 
-  
   const debounce = (func, delay) => {
     let timer;
     return function (...args) {
@@ -130,12 +127,11 @@ function Chat() {
         userID
       );
       setUsernamesClientChattingWith(listofusernames);
-      setChattingWith('')
+      setChattingWith("");
     } catch (error) {
       console.log(error);
     }
   };
-
 
   //Client listener, listening for new messages emits from server
   useEffect(() => {
@@ -199,7 +195,7 @@ function Chat() {
 
   return (
     <div>
-      <Sidebar tab={'chat'}></Sidebar>
+      <Sidebar tab={"chat"}></Sidebar>
       <Flex
         marginLeft="100px" //sidebar width is 100px
         flexDirection={"row"}
@@ -288,16 +284,20 @@ function Chat() {
                   maxHeight={"75vh"}
                   ref={messagesBoxRef}
                 >
-                  {allMessages.map((message, index) => (
-                    <div key={index}>
-                      <Text margin={"30px"}>
-                        {message.senderUsername === username
-                          ? "You"
-                          : message.senderUsername}
-                        : {message.text}
-                      </Text>
-                    </div>
-                  ))}
+                  {chattingWith ? (
+                    allMessages.map((message, index) => (
+                      <div key={index}>
+                        <Text margin={"30px"}>
+                          {message.senderUsername === username
+                            ? "You"
+                            : message.senderUsername}
+                          : {message.text}
+                        </Text>
+                      </div>
+                    ))
+                  ) : (
+                    <Text></Text>
+                  )}
                 </Box>
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
