@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
 import { useLocation } from "react-router-dom";
+import { io } from "socket.io-client";
 import {
   Box,
   Flex,
@@ -25,6 +25,15 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
+import {
+  getUsername,
+  listOfUsernamesClientInActiveChatWith,
+  returnUserInfo,
+  deleteChat,
+  sendMessage,
+  getUserIDFromUsername,
+  loadMessages,
+} from "./firebase";
 
 function Chat() {
   const [userID, setUserID] = useState(""); //client's userid
@@ -32,46 +41,93 @@ function Chat() {
   const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
     useState([]);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
   const messagesBoxRef = useRef();
   const [searchInput, setSearchInput] = useState("");
   const [chattingWith, setChattingWith] = useState("");
   const location = useLocation();
   const { chattingWith: newChattingWith } = location.state || {}; //extracts chattingWith property from location.state, renames to newChattingWith
+  const [socket, setSocket] = useState(null);
+  const [allMessages, setAllMessages] = useState([]);
 
-  const fetchData = async () => {
+  const debounce = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  }
+  const reloadMessages = async () => {
+    const selectedUserID = await getUserIDFromUsername(chattingWith);
+    if (selectedUserID) {
+      const result = await loadMessages(userID, selectedUserID);
+
+      // Check if the messages have changed before updating
+      if (!arraysAreEqual(allMessages, result)) {
+        setAllMessages(result);
+      }
+    }
+  };
+  
+  const [debouncedReloadMessages] = useState(() => debounce(reloadMessages, 500));
+//new messages will change allMessages and force a rerender so messages are seen instantly without having to refresh
+useEffect(() => {
+  debouncedReloadMessages();
+}, [chattingWith, userID, allMessages]);
+
+  const handleChatSelection = async (selectedUsername) => {
+    setChattingWith(selectedUsername);
+
+    // Perform other actions...
     try {
-      const response = await axios.get("http://localhost:8080/getUser");
-      const userid = response.data.id;
-      const username = response.data.username;
-      setUserID(userid);
-      setUsername(username);
-
-      // get list of usernames client has active chat with
-      const activeChatsResponse = await axios.post(
-        "http://localhost:8080/activeChats",
-        {
-          username: username,
-        }
-      );
-
-      const usernamesClientHasActiveChatWith = activeChatsResponse.data.array;
-      setUsernamesClientChattingWith(usernamesClientHasActiveChatWith);
+      const selectedUserID = await getUserIDFromUsername(selectedUsername);
+      const result = await loadMessages(userID, selectedUserID);
+      setAllMessages(result);
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
   };
 
+  const arraysAreEqual = (arr1, arr2) => {
+    return JSON.stringify(arr1) === JSON.stringify(arr2);
+  };
+
+  
+  
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8080");
+    setSocket(newSocket);
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await returnUserInfo();
+        const uid = response.uid;
+        const username = await getUsername(uid);
+        setUsername(username);
+        setUserID(uid);
+        const listofusernames = await listOfUsernamesClientInActiveChatWith(
+          uid
+        );
+        setUsernamesClientChattingWith(listofusernames);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchData();
+  }, []);
+
   const handleDeleteChat = async () => {
-    //username is client username, chattingwith is username of other party
     try {
-      const url = "http://localhost:8080/deleteChat";
-      await axios.post(url, {
-        username1: username,
-        username2: chattingWith,
-      });
-      fetchData();
-      setChattingWith("");
+      const username1 = username;
+      const username2 = chattingWith;
+      await deleteChat(username1, username2);
     } catch (error) {
       console.log(error);
     }
@@ -83,33 +139,65 @@ function Chat() {
     }
   }, [newChattingWith]);
 
+  //this is the client listener meant for listening for new message emits from server
   useEffect(() => {
-    // Retrieve the chattingWith value from localStorage on component mount
-    const storedChattingWith = localStorage.getItem("chattingWith");
-    if (storedChattingWith) {
-      setChattingWith(storedChattingWith);
+    if (!socket || !userID) return;
+
+    const handleIncomingMessage = (data) => {
+      if (userID === data.toUserID) {
+        console.log(data.text);
+        const newMessage = {
+          text: data.text,
+          senderUsername: data.fromUsername,
+        };
+
+        setAllMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    };
+    socket.on("chat message", handleIncomingMessage);
+
+    return () => {
+      socket.off("chat message", handleIncomingMessage);
+    };
+  }, [socket, userID]);
+
+  useEffect(() => {
+    if (socket && userID) {
+      socket.emit("setUserID", userID);
     }
-  }, []);
+  }, [socket, userID]);
 
-  useEffect(() => {
-    localStorage.setItem("chattingWith", chattingWith);
-  }, [chattingWith]);
-
-  const handleSendMessage = () => {
-    const newMessage = message;
-    if (message != "") {
-      setMessages([...messages, newMessage]);
+  const handleSendMessage = async () => {
+    if (message !== "") {
+      const newMessage = {
+        text: message,
+        senderUsername: username,
+      };
+      setAllMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage("");
+
+      //newMessage need to be added to db
+      const userid1 = userID;
+      const userid2 = await getUserIDFromUsername(chattingWith);
+      await sendMessage(newMessage, userid1, userid2);
+      setMessage("");
+
+      // Emit the message to the server
+      if (socket && chattingWith) {
+        socket.emit("chat message", {
+          text: message,
+          toUsername: chattingWith,
+          toUserID: userid2,
+          fromUserID: userID,
+          fromUsername: username,
+        });
+      }
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
-  }, [messages]);
+  }, [allMessages]);
 
   return (
     <div>
@@ -137,6 +225,9 @@ function Chat() {
               </Stack>
             </Flex>
             {/* bottom part with active chats */}
+            userid : {userID} <br />
+            user : {username} <br />
+            chattingwith: {chattingWith} <br />
             <Box flex={"90%"} bgColor={"#edf9ff"}>
               <VStack spacing={0} mt={3}>
                 {usernamesClientChattingWith
@@ -147,7 +238,7 @@ function Chat() {
                     <ActiveChat
                       key={index}
                       username={username}
-                      onClick={(username) => setChattingWith(username)}
+                      onClick={() => handleChatSelection(username)}
                     />
                   ))}
               </VStack>
@@ -207,10 +298,13 @@ function Chat() {
                   ref={messagesBoxRef}
                 >
                   {/* Render existing messages */}
-                  {messages.map((message, index) => (
+                  {allMessages.map((message, index) => (
                     <div key={index}>
                       <Text margin={"30px"}>
-                        {username}: {message}
+                        {message.senderUsername === username
+                          ? "You"
+                          : message.senderUsername}
+                        : {message.text}
                       </Text>
                     </div>
                   ))}
@@ -219,7 +313,6 @@ function Chat() {
                 {/* input portion */}
                 <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
                   <HStack w={"100%"} spacing={10}>
-                    
                     <Input
                       placeholder="Enter message"
                       w={"80%"}
@@ -233,7 +326,11 @@ function Chat() {
                         }
                       }}
                     />
-                    <Button colorScheme="blue" onClick={handleSendMessage} marginRight={'10px'}>
+                    <Button
+                      colorScheme="blue"
+                      onClick={handleSendMessage}
+                      marginRight={"10px"}
+                    >
                       Send
                     </Button>
                   </HStack>

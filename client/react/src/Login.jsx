@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 
@@ -13,6 +12,7 @@ import {
     Text,
   } from "@chakra-ui/react";
 
+  import { signIn } from "./firebase";
 
 
 function Login() {
@@ -27,19 +27,24 @@ function Login() {
       setEmail('dinokhaw@yahoo.com.sg')
       setPassword('password')
     }
+
+    const stuartLogin = () => {
+      setEmail('stuartkhaw@yahoo.com.sg')
+      setPassword('password')
+    }
     const handleLogin = async () => {
       try {
-        const url = "http://localhost:8080/login";
-        const response = await axios.post(url, {
-          email: email,
-          password: password,
-        });
-        if (response.data.success == true) {
-          navigate("/chat");
-        } else {
-          setSignInUnsuccessful(true)
-        }
+        const signInResponse = await signIn(email, password)
+        navigate('/chat')
+        // if (response.data.success == true) {
+        //   navigate("/chat");
+        // } else {
+        //   
+        // }
+        console.log(signInResponse)
+
       } catch (error) {
+        setSignInUnsuccessful(true)
         console.log(error);
       }
     };
@@ -90,6 +95,9 @@ function Login() {
         </Button>
         <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
           fast login (dev)
+        </Button>
+        <Button colorScheme="blue" onClick={stuartLogin} marginLeft={'30px'}>
+          stuart login
         </Button>
       </Box>
     </React.Fragment>
