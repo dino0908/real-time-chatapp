@@ -90,12 +90,9 @@ useEffect(() => {
   const arraysAreEqual = (arr1, arr2) => {
     return JSON.stringify(arr1) === JSON.stringify(arr2);
   };
-
   
-  
-
   useEffect(() => {
-    const newSocket = io("http://localhost:8080");
+    const newSocket = io("http://13.211.232.80:8080");
     setSocket(newSocket);
 
     // Clean up the socket connection when the component unmounts
