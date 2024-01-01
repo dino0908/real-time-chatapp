@@ -288,16 +288,17 @@ function Chat() {
                         <Box
                           key={index}
                           style={{
-                            marginLeft: message.senderUsername === username ? "auto" : "0",
-                            marginRight: message.senderUsername === username ? "0" : "auto",
+                            marginLeft: message.senderUsername === username ? "auto" : "20px",
+                            marginRight: message.senderUsername === username ? "20px" : "auto",
                             textAlign: message.senderUsername === username ? "right" : "left",
                             width: "fit-content", // Adjust width property
-                            maxWidth: "40%",
+                            maxWidth: "35%",
                             borderRadius: "10px",
                             padding: "10px",
                             background: message.senderUsername === username ? "#47A9F9" : "#F3F3F3", // Set the background color
                             color: message.senderUsername === username ? "white" : "black", // Set the text color
-                            marginTop: '20px'
+                            marginTop: '20px',
+                            marginBottom: '20px'
                           }}
                         >
                           <Text

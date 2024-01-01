@@ -58,7 +58,7 @@ function NewChat() {
     <div>
       <Sidebar tab={'newchat'}></Sidebar>
       <Flex marginLeft={"100px"} flexDirection={"column"} h={"100vh"}>
-        <Flex flex={"20%"} bgColor={"#def4ff"}>
+        <Flex flex={"20%"} bgColor={"#edf6fa"}>
           <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
             <Stack spacing={4} alignItems={"center"} w={"50%"}>
               <Heading>Start a new chat</Heading>
@@ -81,7 +81,7 @@ function NewChat() {
         {/* display search results (matching usernames in db) */}
         <Flex
           flex={"80%"}
-          bgColor={"#edf9ff"}
+          bgColor={"white"}
           alignItems={"center"}
           justifyContent={"center"}
         >
@@ -107,11 +107,11 @@ function NewChat() {
                       </Heading>
                       <Spacer></Spacer>
                       <Button
-                        bg={"teal"}
+                        bg={'#0865c2'}
                         color={"white"}
                         marginRight={"15px"}
                         marginTop={"5px"}
-                        _hover={{ bg: "#009191" }}
+                        _hover={{ bg: "#055bb0" }}
                         onClick={() => handleStartChat(username)}
                       >
                         Start chat

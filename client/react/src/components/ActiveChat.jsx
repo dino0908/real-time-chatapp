@@ -11,7 +11,7 @@ function ActiveChat({ username, onClick }) {
       boxShadow={"none"}
       onClick={() => onClick(username)}
       style={{ cursor: 'pointer', transition: 'background-color 0.3s' }}
-      _hover={{ bgColor: 'teal', color: 'white' }}
+      _hover={{ bgColor: '#ebebeb', color: 'black' }}
       
     >
       <Flex flexDirection={"row"} h={"100%"} alignItems={"center"}>
