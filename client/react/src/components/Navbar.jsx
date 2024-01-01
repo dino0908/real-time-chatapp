@@ -15,22 +15,22 @@ function Navbar() {
   return (
     <div>
       <Box
-        h="70px"
         bg="white"
         color="black"
-        paddingY="2"
         textAlign="center"
         fontSize="lg"
         fontWeight="bold"
+        padding={'15px'}
       >
-        <Flex direction="row" justifyContent="space-between" padding="4">
-          <Box w="70px">
-            <Button bgColor='#7e93ba' _hover={{ bg: '#7e93ba' }} onClick={() => navigate("/")}>
-              <Heading size="xs">Dino's Chat App</Heading>
+        <Flex direction="row" justifyContent="space-between">
+          <Box marginTop={'5px'}>
+            <Button bg={'white'} _hover={{ bg: "white" }} onClick={()=>navigate('/')}>
+            <Heading size='lg' fontSize={'20px'} fontFamily={'Bebas Neue'}>Chat App</Heading>
             </Button>
+            
           </Box>
-          <Box>
-            <HStack spacing="24px" marginTop={"10px"} marginLeft={"80px"}>
+          <Box marginTop={'7px'} marginLeft={'60px'}>
+            <HStack spacing="24px" fontFamily={'Rajdhani'}>
               <Text fontSize="12px">Features</Text>
               <Text fontSize="12px">Pricing</Text>
               <Text fontSize="12px">FAQ</Text>

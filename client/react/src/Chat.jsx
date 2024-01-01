@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar";
 import ActiveChat from "./components/ActiveChat";
-import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import {
   Box,
@@ -41,7 +40,7 @@ function Chat() {
   const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
     useState([]);
   const [message, setMessage] = useState("");
-  const messagesBoxRef = useRef();
+  const messagesBoxRef = useRef(null);
   const [searchInput, setSearchInput] = useState("");
   const [chattingWith, setChattingWith] = useState("");
   const [socket, setSocket] = useState(null);
@@ -58,8 +57,6 @@ function Chat() {
     const selectedUserID = await getUserIDFromUsername(chattingWith);
     if (selectedUserID) {
       const result = await loadMessages(userID, selectedUserID);
-
-      // Check if the messages have changed before updating
       if (!arraysAreEqual(allMessages, result)) {
         setAllMessages(result);
       }
@@ -92,7 +89,6 @@ function Chat() {
   useEffect(() => {
     const newSocket = io("http://localhost:8080");
     setSocket(newSocket);
-
     // Clean up the socket connection when the component unmounts
     return () => {
       newSocket.disconnect();
@@ -190,7 +186,9 @@ function Chat() {
   };
 
   useEffect(() => {
-    messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+    if (messagesBoxRef.current) {
+      messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+    }
   }, [allMessages]);
 
   return (
@@ -236,96 +234,102 @@ function Chat() {
           </Flex>
         </Box>
         <Box flex={"80%"} height={"100vh"}>
-          <Flex flexDirection={"column"} height={"100%"}>
-            <Box flex={"10%"} margin={"30px"}>
-              <Flex flexDirection={"column"} gap={3}>
-                <Heading>{chattingWith}</Heading>
-                <Flex flexDirection={"row"} marginRight={"30px"}>
-                  {chattingWith && (
-                    <>
-                      <Box
-                        w={"14px"}
-                        h={"14px"}
-                        borderRadius={"7px"}
-                        bgColor={"#29ff5a"}
-                        marginTop={"5px"}
+          {chattingWith !== "" ? (
+            <Flex flexDirection={"column"} height={"100%"}>
+              <Box flex={"10%"} margin={"30px"}>
+                <Flex flexDirection={"column"} gap={3}>
+                  <Heading>{chattingWith}</Heading>
+                  <Flex flexDirection={"row"} marginRight={"30px"}>
+                    {chattingWith && (
+                      <>
+                        <Box
+                          w={"14px"}
+                          h={"14px"}
+                          borderRadius={"7px"}
+                          bgColor={"#29ff5a"}
+                          marginTop={"5px"}
+                          marginRight={"10px"}
+                        ></Box>
+                        <Text color={"#8a8a8a"}>Active now</Text>
+                      </>
+                    )}
+                    <Spacer></Spacer>
+                    <Menu>
+                      <MenuButton
+                        as={Button}
+                        colorScheme="white"
+                        _hover={{ bg: "#F1F1F1" }}
+                      >
+                        <AiOutlineMore size={"25px"} color="black" />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem textColor={"red"} onClick={handleDeleteChat}>
+                          Delete chat
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Flex>
+                </Flex>
+              </Box>
+              <Center>
+                <Divider border={"1px solid #cccccc"} w={"90%"}></Divider>
+              </Center>
+              <Box flex={"90%"}>
+                <Flex flexDirection={"column"} h="100%">
+                  <Box
+                    flex={"85%"}
+                    borderBottom={"1px solid black"}
+                    overflowY={"auto"}
+                    maxHeight={"75vh"}
+                    ref={messagesBoxRef}
+                  >
+                    {chattingWith ? (
+                      allMessages.map((message, index) => (
+                        <div key={index}>
+                          <Text margin={"30px"}>
+                            {message.senderUsername === username
+                              ? "You"
+                              : message.senderUsername}
+                            : {message.text}
+                          </Text>
+                        </div>
+                      ))
+                    ) : (
+                      <Text></Text>
+                    )}
+                  </Box>
+                  <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
+                    <HStack w={"100%"} spacing={10}>
+                      <Input
+                        placeholder="Enter message"
+                        w={"80%"}
+                        value={message}
+                        onChange={(e) => {
+                          setMessage(e.target.value);
+                        }}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            handleSendMessage();
+                          }
+                        }}
+                      />
+                      <Button
+                        colorScheme="blue"
+                        onClick={handleSendMessage}
                         marginRight={"10px"}
-                      ></Box>
-                      <Text color={"#8a8a8a"}>Active now</Text>
-                    </>
-                  )}
-                  <Spacer></Spacer>
-                  <Menu>
-                    <MenuButton
-                      as={Button}
-                      colorScheme="white"
-                      _hover={{ bg: "#F1F1F1" }}
-                    >
-                      <AiOutlineMore size={"25px"} color="black" />
-                    </MenuButton>
-                    <MenuList>
-                      <MenuItem textColor={"red"} onClick={handleDeleteChat}>
-                        Delete chat
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
+                      >
+                        Send
+                      </Button>
+                    </HStack>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Box>
-            <Center>
-              <Divider border={"1px solid #cccccc"} w={"90%"}></Divider>
+              </Box>
+            </Flex>
+          ) : (
+            <Center height="100%">
+              <Text>Select a chat to start messaging</Text>
             </Center>
-            <Box flex={"90%"}>
-              <Flex flexDirection={"column"} h="100%">
-                <Box
-                  flex={"85%"}
-                  borderBottom={"1px solid black"}
-                  overflowY={"auto"}
-                  maxHeight={"75vh"}
-                  ref={messagesBoxRef}
-                >
-                  {chattingWith ? (
-                    allMessages.map((message, index) => (
-                      <div key={index}>
-                        <Text margin={"30px"}>
-                          {message.senderUsername === username
-                            ? "You"
-                            : message.senderUsername}
-                          : {message.text}
-                        </Text>
-                      </div>
-                    ))
-                  ) : (
-                    <Text></Text>
-                  )}
-                </Box>
-                <Flex flex={"15%"} alignItems={"center"} marginLeft={"20px"}>
-                  <HStack w={"100%"} spacing={10}>
-                    <Input
-                      placeholder="Enter message"
-                      w={"80%"}
-                      value={message}
-                      onChange={(e) => {
-                        setMessage(e.target.value);
-                      }}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          handleSendMessage();
-                        }
-                      }}
-                    />
-                    <Button
-                      colorScheme="blue"
-                      onClick={handleSendMessage}
-                      marginRight={"10px"}
-                    >
-                      Send
-                    </Button>
-                  </HStack>
-                </Flex>
-              </Flex>
-            </Box>
-          </Flex>
+          )}
         </Box>
       </Flex>
     </div>

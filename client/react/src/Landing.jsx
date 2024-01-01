@@ -1,6 +1,5 @@
 import React from "react";
-import backgroundImage from "../assets/backgroundImage.svg";
-import phone from "..//assets/phone.png";
+import phone from "../assets/phone.png";
 import Navbar from "./components/Navbar";
 import {
   Box,
@@ -16,23 +15,19 @@ function Landing() {
     <div>
     <Navbar/>
       <Box
-        h="calc(100vh - 70px)"
-        backgroundImage={`url(${backgroundImage})`}
-        backgroundSize="cover"
+        h="calc(100vh - 80px)"
+        bgColor={'#f2f2f2'}
         overflow={"hidden"}
       >
-        <Box paddingTop={"30px"}>
-          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            Real-time
+        <Box paddingTop={"30px"} marginRight={'20px'}>
+          <Text fontSize="50px" fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
+            Real-time 
           </Text>
-          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            chat messaging
-          </Text>
-          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            with others
+          <Text fontSize="50px" fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
+          chat messaging
           </Text>
           <Box w={"600px"} mx={"auto"} textAlign={"center"} marginTop={"30px"}>
-            <Text>
+            <Text fontFamily={'Saira Condensed'}>
               Connect with friends and colleagues instantly through our
               intuitive chat platform. Share ideas, collaborate on projects, and
               stay connected wherever you go. Experience seamless real-time
@@ -40,17 +35,13 @@ function Landing() {
               experience.
             </Text>
           </Box>
-          <Center marginTop={"20px"}>
-            <Button colorScheme="teal" variant="solid">
-              Get started
-            </Button>
-          </Center>
+
           <Center>
             <Image
               src={phone}
               alt="Phone Image"
               marginTop="8"
-              boxSize={"300px"}
+              boxSize={"350px"}
             />
           </Center>
         </Box>

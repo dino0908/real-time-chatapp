@@ -53,17 +53,17 @@ function Login() {
     <React.Fragment>
       <Navbar />
       <Box
-        h="calc(100vh - 70px)"
+        h="calc(100vh - 80px)"
         mx={"auto"}
         textAlign={"center"}
-        bgColor={"#F9F9F9"}
+        bgColor={'#f2f2f2'}
       >
-        <Box marginBottom={"30px"} paddingTop={"50px"}>
+        <Box marginBottom={"30px"} paddingTop={"50px"} fontFamily={'Hind'}>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            Login to
+            Sign in to
           </Text>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            start messaging!
+            your account
           </Text>
         </Box>
 

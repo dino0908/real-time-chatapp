@@ -42,20 +42,17 @@ function Register() {
     <React.Fragment>
       <Navbar />
       <Box
-        h="calc(100vh - 70px)"
+        h="calc(100vh - 80px)"
         mx={"auto"}
         textAlign={"center"}
-        bgColor={"#F9F9F9"}
+        bgColor={'#f2f2f2'}
       >
-        <Box marginBottom={"30px"} paddingTop={"50px"}>
+        <Box marginBottom={"30px"} paddingTop={"50px"} fontFamily={'Hind'}>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            Start your
+            Register for
           </Text>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            chat messaging
-          </Text>
-          <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            experience today!
+            an account
           </Text>
         </Box>
 
@@ -63,7 +60,7 @@ function Register() {
           w="40%"
           marginBottom={"30px"}
           type="email"
-          placeholder="Enter email"
+          placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
         ></Input>
         {emailInUse && <p>Email is already in use.</p>}
@@ -72,7 +69,7 @@ function Register() {
           w="40%"
           marginBottom={"30px"}
           type="text"
-          placeholder="Enter username"
+          placeholder="Username"
           onChange={(e) => setUsername(e.target.value)}
         ></Input>
         {usernameInUse && <p>Username is already in use.</p>}
@@ -80,7 +77,7 @@ function Register() {
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
             type={show ? "text" : "password"}
-            placeholder="Enter password"
+            placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
