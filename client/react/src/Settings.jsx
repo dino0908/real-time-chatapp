@@ -27,6 +27,18 @@ function Settings() {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
   const [email, setEmail] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+
+    
+    if (file) {
+      console.log("Uploading file:", file);
+      // Handle the file upload logic here
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,14 +85,25 @@ function Settings() {
                   />
                 </Center>
                 <Center marginTop={"30px"}>
-                  <Button
-                    bgColor={"#0473e2"}
-                    w={"200px"}
-                    color={"white"}
-                    _hover={{ bg: "#0462bf" }}
-                  >
-                    Upload new photo
-                  </Button>
+                {/* Input for selecting a file */}
+      <Input
+        type="file"
+        accept="image/*"  // Specify accepted file types (e.g., images)
+        onChange={handleFileChange}
+        display="none"  // Hide the default file input UI
+        id="fileInput" // Add an ID for easier access
+      />
+
+      {/* Chakra UI Button to trigger file selection */}
+      <Button
+        bgColor="#0473e2"
+        w="200px"
+        color="white"
+        _hover={{ bg: "#0462bf" }}
+        onClick={() => document.getElementById("fileInput").click()}
+      >
+        Upload new photo
+      </Button>
                 </Center>
               </CardBody>
               <CardFooter>
@@ -127,7 +150,7 @@ function Settings() {
                             marginRight={"20px"}
                           >
                             <Text >Username</Text>
-                            <Input isReadOnly={'true'} fontWeight={'bold'} value={username} marginBottom={"10%"} />
+                            <Input isReadOnly={true} fontWeight={'bold'} value={username} marginBottom={"10%"} />
                             <Text>New password</Text>
                             <Input
                               type={"password"}
