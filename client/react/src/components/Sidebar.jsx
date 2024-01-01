@@ -1,11 +1,12 @@
 import React from "react";
-import { Box, Avatar, VStack, Button, Divider } from "@chakra-ui/react";
+import { Box, Avatar, VStack, Button } from "@chakra-ui/react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
-function Sidebar() {
+
+function Sidebar({ tab }) {
   const navigate = useNavigate();
   return (
     <div>
@@ -25,7 +26,7 @@ function Sidebar() {
           <VStack spacing={20}>
             <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
             <Button
-              bgColor={"#00162f"}
+              bgColor={tab == "chat" ? "#0259bd" : "#00162f"}
               _hover={{ bg: "#4287f5" }}
               onClick={() => {
                 navigate("/chat");
@@ -34,7 +35,7 @@ function Sidebar() {
               <ChatIcon size={23} color="white" />
             </Button>
             <Button
-              bgColor={"#00162f"}
+              bgColor={tab == "newchat" ? "#0259bd" : "#00162f"}
               _hover={{ bg: "#4287f5" }}
               onClick={() => {
                 navigate("/newchat");
@@ -42,7 +43,9 @@ function Sidebar() {
             >
               <IoPersonAddOutline size={23} color="white" />
             </Button>
-            <Button bgColor={"#00162f"} _hover={{ bg: "#4287f5" }}>
+            <Button bgColor={tab == "settings" ? "#0259bd" : "#00162f"} _hover={{ bg: "#4287f5" }} onClick={() => {
+                  navigate("/settings");
+                }}>
               <CiSettings size={25} color="white" />
             </Button>
           </VStack>

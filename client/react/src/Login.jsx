@@ -23,15 +23,15 @@ function Login() {
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
 
-    const fastLogin = () => {
-      setEmail('dinokhaw@yahoo.com.sg')
-      setPassword('password')
-    }
+    // const fastLogin = () => {
+    //   setEmail('dinokhaw@yahoo.com.sg')
+    //   setPassword('password')
+    // }
 
-    const stuartLogin = () => {
-      setEmail('stuartkhaw@yahoo.com.sg')
-      setPassword('password')
-    }
+    // const stuartLogin = () => {
+    //   setEmail('stuartkhaw@yahoo.com.sg')
+    //   setPassword('password')
+    // }
     const handleLogin = async () => {
       try {
         const signInResponse = await signIn(email, password)
@@ -53,17 +53,17 @@ function Login() {
     <React.Fragment>
       <Navbar />
       <Box
-        h="calc(100vh - 70px)"
+        h="calc(100vh - 80px)"
         mx={"auto"}
         textAlign={"center"}
-        bgColor={"#F9F9F9"}
+        bgColor={'#f2f2f2'}
       >
-        <Box marginBottom={"30px"} paddingTop={"50px"}>
+        <Box marginBottom={"30px"} paddingTop={"50px"} fontFamily={'Hind'}>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            Login to
+            Sign in to
           </Text>
           <Text fontSize="4xl" fontWeight="bold" textAlign={"center"}>
-            start messaging!
+            your account
           </Text>
         </Box>
 
@@ -74,14 +74,18 @@ function Login() {
           placeholder="Enter email"
           onChange={(e) => setEmail(e.target.value)}
           value={email}
+          borderColor={'grey'}
+          _hover={{ borderColor: "black" }}
         ></Input>
 
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
             type={show ? "text" : "password"}
-            placeholder="Enter password"
+            placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
+            borderColor={'grey'}
+            _hover={{ borderColor: "black" }}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -89,16 +93,16 @@ function Login() {
             </Button>
           </InputRightElement>
         </InputGroup>
-        {signInUnsuccessful && <p>Email or password incorect. Please try again.</p>}
-        <Button colorScheme="blue" onClick={handleLogin}>
+        {signInUnsuccessful && <Text color={'red'} marginBottom={'15px'}>Email or password incorect. Please try again.</Text>}
+        <Button colorScheme="blue" onClick={handleLogin} w={'10%'} minW={'70px'}>
           Login
         </Button>
-        <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
+        {/* <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
           fast login (dev)
         </Button>
         <Button colorScheme="blue" onClick={stuartLogin} marginLeft={'30px'}>
           stuart login
-        </Button>
+        </Button> */}
       </Box>
     </React.Fragment>
   )
