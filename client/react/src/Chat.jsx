@@ -246,7 +246,7 @@ function Chat() {
                           w={"14px"}
                           h={"14px"}
                           borderRadius={"7px"}
-                          bgColor={"#29ff5a"}
+                          bgColor={"#14d941"}
                           marginTop={"5px"}
                           marginRight={"10px"}
                         ></Box>
@@ -285,15 +285,35 @@ function Chat() {
                   >
                     {chattingWith ? (
                       allMessages.map((message, index) => (
-                        <div key={index}>
-                          <Text margin={"30px"}>
-                            {message.senderUsername === username
-                              ? "You"
-                              : message.senderUsername}
-                            : {message.text}
+                        <Box
+                          key={index}
+                          style={{
+                            marginLeft: message.senderUsername === username ? "auto" : "0",
+                            marginRight: message.senderUsername === username ? "0" : "auto",
+                            textAlign: message.senderUsername === username ? "right" : "left",
+                            width: "fit-content", // Adjust width property
+                            maxWidth: "40%",
+                            borderRadius: "10px",
+                            padding: "10px",
+                            background: message.senderUsername === username ? "#47A9F9" : "#F3F3F3", // Set the background color
+                            color: message.senderUsername === username ? "white" : "black", // Set the text color
+                            marginTop: '20px'
+                          }}
+                        >
+                          <Text
+                            maxW="100%"
+                            whiteSpace="pre-wrap"
+                            wordWrap="break-word"
+                          >
+                            {message.senderUsername === username ? "You" : message.senderUsername}:
+                            &nbsp;{message.text}
                           </Text>
-                        </div>
+                        </Box>
                       ))
+                      
+                      
+                      
+                      
                     ) : (
                       <Text></Text>
                     )}

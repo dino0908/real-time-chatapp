@@ -62,6 +62,8 @@ function Register() {
           type="email"
           placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
+          borderColor={'grey'}
+            _hover={{ borderColor: "black" }}
         ></Input>
         {emailInUse && <p>Email is already in use.</p>}
         <br />
@@ -71,6 +73,8 @@ function Register() {
           type="text"
           placeholder="Username"
           onChange={(e) => setUsername(e.target.value)}
+          borderColor={'grey'}
+            _hover={{ borderColor: "black" }}
         ></Input>
         {usernameInUse && <p>Username is already in use.</p>}
 
@@ -79,6 +83,8 @@ function Register() {
             type={show ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
+            borderColor={'grey'}
+            _hover={{ borderColor: "black" }}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -87,7 +93,7 @@ function Register() {
           </InputRightElement>
         </InputGroup>
 
-        <Button colorScheme="blue" onClick={handleRegistration}>
+        <Button colorScheme="blue" onClick={handleRegistration} w={'10%'} minW={'70px'}>
           Sign up
         </Button>
       </Box>
