@@ -43,7 +43,9 @@ function Sidebar({ tab }) {
             >
               <IoPersonAddOutline size={23} color="white" />
             </Button>
-            <Button bgColor={tab == "settings" ? "#0259bd" : "#00162f"} _hover={{ bg: "#4287f5" }}>
+            <Button bgColor={tab == "settings" ? "#0259bd" : "#00162f"} _hover={{ bg: "#4287f5" }} onClick={() => {
+                  navigate("/settings");
+                }}>
               <CiSettings size={25} color="white" />
             </Button>
           </VStack>
