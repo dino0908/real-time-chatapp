@@ -17,6 +17,8 @@ import {
   Avatar,
   Button,
   Text,
+  Input,
+  VStack,
 } from "@chakra-ui/react";
 
 import { getUsername, returnUserInfo } from "./firebase";
@@ -24,6 +26,7 @@ import { getUsername, returnUserInfo } from "./firebase";
 function Settings() {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +36,8 @@ function Settings() {
         setUserID(uid);
         const username = await getUsername(uid);
         setUsername(username);
+        const email = response.email;
+        setEmail(email);
       } catch (error) {
         console.log(error.message);
       }
@@ -104,16 +109,59 @@ function Settings() {
               <CardHeader>
                 <Heading>Edit Profile</Heading>
               </CardHeader>
-              <CardBody h={'50%'}>
-                <Tabs h={'100%'}>
+              <CardBody h={"50%"}>
+                <Tabs h={"100%"}>
                   <TabList>
                     <Tab>User Info</Tab>
                     <Tab isDisabled>Billing Information</Tab>
                   </TabList>
 
-                  <TabPanels h={'100%'}>
-                    <TabPanel h={'95%'}>
-                      stuff
+                  <TabPanels h={"100%"}>
+                    <TabPanel h={"95%"}>
+                      <Flex flexDir={"row"} h={"100%"}>
+                        <Box flex={"50%"}>
+                          <VStack
+                            spacing={2}
+                            align={"start"}
+                            marginTop={"40px"}
+                            marginRight={"20px"}
+                          >
+                            <Text >Username</Text>
+                            <Input isReadOnly={'true'} fontWeight={'bold'} value={username} marginBottom={"10%"} />
+                            <Text>New password</Text>
+                            <Input
+                              type={"password"}
+                              placeholder="Password"
+                              marginBottom={"10%"}
+                            />
+                            <Text>Email</Text>
+                            <Input placeholder={email} />
+                          </VStack>
+                        </Box>
+
+                        <Box flex={"50%"}>
+                          <VStack
+                            spacing={2}
+                            align={"start"}
+                            marginTop={"40px"}
+                          >
+                            <Text visibility={"hidden"}>Username</Text>
+                            <Input
+                              value={username}
+                              marginBottom={"10%"}
+                              visibility={"hidden"}
+                            />
+                            <Text>Confirm Password</Text>
+                            <Input
+                              type={"password"}
+                              placeholder="Password"
+                              marginBottom={"10%"}
+                            />
+                            <Text>Confirm Email Address</Text>
+                            <Input placeholder={email} />
+                          </VStack>
+                        </Box>
+                      </Flex>
                     </TabPanel>
                     <TabPanel>
                       <Text>Billing information (Not Applicable)</Text>
@@ -122,14 +170,14 @@ function Settings() {
                 </Tabs>
               </CardBody>
               <CardFooter>
-              <Button
-                    bgColor={"#0473e2"}
-                    w={"200px"}
-                    color={"white"}
-                    _hover={{ bg: "#0462bf" }}
-                  >
-                    Update info
-                  </Button>
+                <Button
+                  bgColor={"#0473e2"}
+                  w={"200px"}
+                  color={"white"}
+                  _hover={{ bg: "#0462bf" }}
+                >
+                  Update info
+                </Button>
               </CardFooter>
             </Card>
           </Box>
