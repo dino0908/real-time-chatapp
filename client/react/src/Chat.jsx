@@ -21,6 +21,9 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Hide,
+  Show,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -35,6 +38,7 @@ import {
 } from "./firebase";
 
 function Chat() {
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
   const [userID, setUserID] = useState("");
   const [username, setUsername] = useState("");
   const [usernamesClientChattingWith, setUsernamesClientChattingWith] =
@@ -72,6 +76,10 @@ function Chat() {
   }, [chattingWith, userID, allMessages]);
 
   const handleChatSelection = async (selectedUsername) => {
+    
+    if (isSmallScreen) {
+      console.log('small screen')
+    }
     setChattingWith(selectedUsername);
     try {
       const selectedUserID = await getUserIDFromUsername(selectedUsername);
@@ -195,9 +203,10 @@ function Chat() {
     <div>
       <Sidebar tab={"chat"}></Sidebar>
       <Flex
-        marginLeft="100px" //sidebar width is 100px
+        marginLeft="15%"
         flexDirection={"row"}
         height={"100vh"}
+        
       >
         <Box flex={"20%"} minW={"180px"}>
           <Flex height={"100%"} flexDirection={"column"} bgColor={"#def4ff"}>
@@ -233,6 +242,7 @@ function Chat() {
             </Box>
           </Flex>
         </Box>
+        <Hide below="md">
         <Box flex={"80%"} height={"100vh"}>
           {chattingWith !== "" ? (
             <Flex flexDirection={"column"} height={"100%"}>
@@ -304,17 +314,13 @@ function Chat() {
                           <Text
                             maxW="100%"
                             whiteSpace="pre-wrap"
-                            wordWrap="break-word"
+                            
                           >
                             {message.senderUsername === username ? "You" : message.senderUsername}:
                             &nbsp;{message.text}
                           </Text>
                         </Box>
-                      ))
-                      
-                      
-                      
-                      
+                      ))                     
                     ) : (
                       <Text></Text>
                     )}
@@ -352,6 +358,7 @@ function Chat() {
             </Center>
           )}
         </Box>
+        </Hide>
       </Flex>
     </div>
   );

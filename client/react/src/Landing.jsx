@@ -4,7 +4,6 @@ import Navbar from "./components/Navbar";
 import {
   Box,
   Text,
-  Button,
   Center,
   Image,
 } from "@chakra-ui/react";
@@ -20,14 +19,14 @@ function Landing() {
         overflow={"hidden"}
       >
         <Box paddingTop={"30px"} marginRight={'20px'}>
-          <Text fontSize={{ base: "32px", md: "45px", lg: "56px" }} fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
+          <Text fontSize={{ base: "32px", md: "45px", lg: "59px" }} fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
             Real-time 
           </Text>
-          <Text fontSize={{ base: "32px", md: "45px", lg: "56px" }} fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
+          <Text fontSize={{ base: "32px", md: "45px", lg: "59px" }} fontWeight="bold" textAlign={"center"} fontFamily={'Bebas Neue'}>
           chat messaging
           </Text>
-          <Box w={'65%'} mx={"auto"} textAlign={"center"} marginTop={"30px"}>
-            <Text fontFamily={'Saira Condensed'} fontSize={{ base: "15px", md: "18px", lg: "26px" }}>
+          <Box w={'60%'} maxWidth={'1000px'} mx={"auto"} textAlign={"center"} marginTop={"30px"}>
+            <Text fontFamily={'Saira Condensed'} fontSize={{ base: "16px", md: "20px", lg: "32px" }}>
               Connect with friends and colleagues instantly through our
               intuitive chat platform. Share ideas, collaborate on projects, and
               stay connected wherever you go. Experience seamless real-time

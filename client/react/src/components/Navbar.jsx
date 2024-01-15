@@ -52,11 +52,11 @@ function Navbar() {
               fontFamily={"Rajdhani"}
               marginLeft={{ base: "-30px", md: "30px" }}
             >
-              <Text fontSize={{ base: "12px", md: "15px" }}>Features</Text>
-              <Text fontSize={{ base: "12px", md: "15px" }}>Pricing</Text>
-              <Text fontSize={{ base: "12px", md: "15px" }}>FAQ</Text>
-              <Text fontSize={{ base: "12px", md: "15px" }}>About</Text>
-              <Text fontSize={{ base: "12px", md: "15px" }}>Contact</Text>
+              <Text fontSize={{ base: "12px", md: "19px" }}>Features</Text>
+              <Text fontSize={{ base: "12px", md: "19px" }}>Pricing</Text>
+              <Text fontSize={{ base: "12px", md: "19px" }}>FAQ</Text>
+              <Text fontSize={{ base: "12px", md: "19px" }}>About</Text>
+              <Text fontSize={{ base: "12px", md: "19px" }}>Contact</Text>
             </HStack>
           </Box>
           <Hide below="md">
