@@ -61,7 +61,7 @@ function NewChat() {
         <Flex flex={"20%"} bgColor={"#edf6fa"}>
           <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
             <Stack spacing={4} alignItems={"center"} w={"50%"}>
-              <Heading fontSize={{ base: "22px", md: '32px', lg: '42px'}}>Start a new chat</Heading>
+              <Heading fontSize={{ base: "20px", md: '32px', lg: '42px'}}>Start a new chat</Heading>
               <InputGroup w={"95%"}>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon></SearchIcon>
