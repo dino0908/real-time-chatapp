@@ -16,6 +16,7 @@ function Sidebar({ tab }) {
         top={0}
         h="100%"
         w="15%"
+        maxW={'150px'}
         bg="#00162f"
         color="white"
         p={4}

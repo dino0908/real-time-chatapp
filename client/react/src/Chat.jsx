@@ -23,7 +23,8 @@ import {
   MenuItem,
   Hide,
   Show,
-  useBreakpointValue
+  useBreakpointValue,
+  calc
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -203,16 +204,11 @@ function Chat() {
     <div>
       <Sidebar tab={"chat"}></Sidebar>
       <Flex
-        marginLeft="15%"
+        marginLeft={`min(15%, 150px)`}
         flexDirection={"row"}
         height={"100vh"}
-        
       >
         {!isViewingChat ? (
-
-          
-
-      
           <Box flex={"20%"} minW={"180px"}>
           <Flex height={"100%"} flexDirection={"column"} bgColor={"#def4ff"}>
             <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>

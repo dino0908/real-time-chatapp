@@ -69,6 +69,7 @@ function Login() {
 
         <Input
           w="40%"
+          maxW={'500px'}
           marginBottom={"30px"}
           type="text"
           placeholder="Enter email"
@@ -78,8 +79,9 @@ function Login() {
           _hover={{ borderColor: "black" }}
         ></Input>
 
-        <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
+        <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"} maxW={'500px'}>
           <Input
+          
             type={show ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}

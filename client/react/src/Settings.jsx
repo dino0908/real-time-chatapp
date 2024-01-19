@@ -33,7 +33,6 @@ function Settings() {
     const file = event.target.files[0];
     setSelectedFile(file);
 
-    
     if (file) {
       console.log("Uploading file:", file);
       // Handle the file upload logic here
@@ -60,11 +59,15 @@ function Settings() {
   return (
     <div>
       <Sidebar tab={"settings"}></Sidebar>
-      <Box position="relative" marginLeft="100px" h="100vh" bgColor="#f0f2f0">
-        <Flex flexDir={"row"} h={"100%"}>
-          <Box flex={"30%"} h={"100%"}>
+      <Box
+        position="relative"
+        marginLeft={`min(15%, 150px)`}
+        h="100vh"
+        bgColor="#f0f2f0"
+      >
+        <Flex flexDir={"row"} h={"100%"} w={"100%"}>
+          <Box flex={"30%"} h={"100%"} w={"100%"}>
             <Card
-              minW={"250px"}
               w="75%"
               h={"50%"}
               minH={"300px"}
@@ -85,25 +88,25 @@ function Settings() {
                   />
                 </Center>
                 <Center marginTop={"30px"}>
-                {/* Input for selecting a file */}
-      <Input
-        type="file"
-        accept="image/*"  // Specify accepted file types (e.g., images)
-        onChange={handleFileChange}
-        display="none"  // Hide the default file input UI
-        id="fileInput" // Add an ID for easier access
-      />
+                  {/* Input for selecting a file */}
+                  <Input
+                    type="file"
+                    accept="image/*" // Specify accepted file types (e.g., images)
+                    onChange={handleFileChange}
+                    display="none" // Hide the default file input UI
+                    id="fileInput" // Add an ID for easier access
+                  />
 
-      {/* Chakra UI Button to trigger file selection */}
-      <Button
-        bgColor="#0473e2"
-        w="200px"
-        color="white"
-        _hover={{ bg: "#0462bf" }}
-        onClick={() => document.getElementById("fileInput").click()}
-      >
-        Upload new photo
-      </Button>
+                  {/* Chakra UI Button to trigger file selection */}
+                  <Button
+                    bgColor="#0473e2"
+                    w="200px"
+                    color="white"
+                    _hover={{ bg: "#0462bf" }}
+                    onClick={() => document.getElementById("fileInput").click()}
+                  >
+                    Upload new photo
+                  </Button>
                 </Center>
               </CardBody>
               <CardFooter>
@@ -122,7 +125,6 @@ function Settings() {
           </Box>
           <Box flex={"70%"} h={"100%"}>
             <Card
-              minW={"500px"}
               w="80%"
               h={"85%"}
               minH={"300px"}
@@ -149,8 +151,13 @@ function Settings() {
                             marginTop={"40px"}
                             marginRight={"20px"}
                           >
-                            <Text >Username</Text>
-                            <Input isReadOnly={true} fontWeight={'bold'} value={username} marginBottom={"10%"} />
+                            <Text>Username</Text>
+                            <Input
+                              isReadOnly={true}
+                              fontWeight={"bold"}
+                              value={username}
+                              marginBottom={"10%"}
+                            />
                             <Text>New password</Text>
                             <Input
                               type={"password"}
