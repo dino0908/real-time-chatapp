@@ -1,6 +1,6 @@
-<h1 align='center'>RealTime Chat App</h1>
+<h1 align='center'>Real-Time Chat App</h1>
 
-A real-time chat application that allows users to register, log in, and engage in one-on-one chats using their registered usernames. The app is built with React and Chakra UI for the frontend, a Node.js server for the backend using Socket.io for real-time communication, and Firebase for authentication and Firestore for database storage.
+A real-time chat application that allows users to engage in chats with other registered users. The app is built with React and Chakra UI for the frontend, a Node.js server for the backend using Socket.io for real-time communication, and Firebase for authentication and Firestore for database storage.
 
 ## Features
 
