@@ -19,11 +19,13 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Register />} />
             <Route path="/login" element={<Login />} />
+
             <Route exact path='/' element={<PrivateRoute/>}>
               <Route path="/chat" element={<Chat />} />
               <Route path="/newchat" element={<NewChat />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
+            
           </Routes>
         </Router>
       </AuthProvider>

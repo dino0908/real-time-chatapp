@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 // import { signUp, returnUserInfo, addUserToDatabase } from "./firebase";
+import { returnUserInfo, addUserToDatabase } from "./firebase";
 
 function Register() {
   const [show, setShow] = React.useState(false);
@@ -28,7 +29,13 @@ function Register() {
 
   const handleRegistration2 = async () => {
     try {
-      await registerUser(email, password)  
+      await registerUser(email, password)
+      const response = await returnUserInfo()
+      const uid = response.uid
+      navigate('/chat')
+      console.log('registration successful')
+      await addUserToDatabase(email, username, uid);
+      console.log('adding to db successful')
     }
     catch (error) {
       console.log(error)
