@@ -2,20 +2,28 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_REACT_APP_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_REACT_APP_FIREBASE_APP_ID,
-};
+// const firebaseConfig = {
+//   apiKey: import.meta.env.VITE_REACT_APP_FIREBASE_API_KEY,
+//   authDomain: import.meta.env.VITE_REACT_APP_FIREBASE_AUTH_DOMAIN,
+//   projectId: import.meta.env.VITE_REACT_APP_FIREBASE_PROJECT_ID,
+//   storageBucket: import.meta.env.VITE_REACT_APP_FIREBASE_STORAGE_BUCKET,
+//   messagingSenderId: import.meta.env.VITE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+//   appId: import.meta.env.VITE_REACT_APP_FIREBASE_APP_ID,
+// };
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAcsvFVtbJyUju3aZqBvQ7Xy0OWgIDB6pE",
+  authDomain: "chatapp-6ec9f.firebaseapp.com",
+  projectId: "chatapp-6ec9f",
+  storageBucket: "chatapp-6ec9f.appspot.com",
+  messagingSenderId: "368390895480",
+  appId: "1:368390895480:web:ae2c06a97472866c86ba8d"
+};
 
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+export const auth = getAuth(app);
 const db = getFirestore(app);
 
 export const returnUserInfo = () => {
@@ -304,4 +312,3 @@ export const deleteChat = async (username1, username2) => {
     console.log(error)
   }
 }
-
