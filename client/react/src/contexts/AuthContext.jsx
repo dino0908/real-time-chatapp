@@ -17,18 +17,16 @@ export function AuthProvider({children}) {
         return unsubscribe
     }, [])
 
-    
-
     async function registerUser(email, password) {
         return signUp(email, password)
     }
 
+    //whatever you pass into value can be accessed from other pages e.g const { registerUser } = useAuth()
     const value = {
         currentUser,
         registerUser
     }
     
-
   return (
     <AuthContext.Provider value={value}>
         {children}

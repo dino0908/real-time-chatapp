@@ -27,7 +27,7 @@ function Register() {
   const navigate = useNavigate();
   const { registerUser } = useAuth()
 
-  const handleRegistration2 = async () => {
+  const handleRegistration = async () => {
     try {
       await registerUser(email, password)
       const response = await returnUserInfo()
@@ -112,7 +112,7 @@ function Register() {
           </InputRightElement>
         </InputGroup>
 
-        <Button colorScheme="blue" onClick={handleRegistration2} w={'10%'} minW={'70px'}>
+        <Button colorScheme="blue" onClick={handleRegistration} w={'10%'} minW={'70px'}>
           Sign up
         </Button>
       </Box>

@@ -14,7 +14,6 @@ import {
 
   import { signIn } from "./firebase";
 
-
 function Login() {
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
@@ -27,11 +26,6 @@ function Login() {
       try {
         const signInResponse = await signIn(email, password)
         navigate('/chat')
-        // if (response.data.success == true) {
-        //   navigate("/chat");
-        // } else {
-        //   
-        // }
         console.log(signInResponse)
 
       } catch (error) {
@@ -72,7 +66,6 @@ function Login() {
 
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"} maxW={'500px'}>
           <Input
-          
             type={show ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
@@ -90,12 +83,6 @@ function Login() {
         <Button colorScheme="blue" onClick={handleLogin} w={'10%'} minW={'70px'}>
           Login
         </Button>
-        {/* <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
-          fast login (dev)
-        </Button>
-        <Button colorScheme="blue" onClick={stuartLogin} marginLeft={'30px'}>
-          stuart login
-        </Button> */}
       </Box>
     </React.Fragment>
   )

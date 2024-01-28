@@ -16,10 +16,13 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+
+            {/* Public routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Register />} />
             <Route path="/login" element={<Login />} />
-
+            
+            {/* Private routes */}
             <Route exact path='/' element={<PrivateRoute/>}>
               <Route path="/chat" element={<Chat />} />
               <Route path="/newchat" element={<NewChat />} />
