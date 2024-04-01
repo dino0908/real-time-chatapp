@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import { useAuth } from "./contexts/AuthContext";
 
 import {
   Box,
@@ -13,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-// import { signUp, returnUserInfo, addUserToDatabase } from "./firebase";
+import { signUp, returnUserInfo, addUserToDatabase } from "./firebase";
 
 function Register() {
   const [show, setShow] = React.useState(false);
@@ -24,31 +23,20 @@ function Register() {
   const [emailInUse, setEmailInUse] = useState(false)
   const [usernameInUse, setUsernameInUse] = useState(false)
   const navigate = useNavigate();
-  const { registerUser } = useAuth()
 
-  const handleRegistration2 = async () => {
+  const handleRegistration = async () => {
     try {
-      await registerUser(email, password)  
+      await signUp(email, password)
+      const response = await returnUserInfo()
+      const uid = response.uid
+      navigate('/chat')
+      console.log('registration successful')
+      await addUserToDatabase(email, username, uid);
+      console.log('adding to db successful')
+    } catch (error) {
+      console.log(error);
     }
-    catch (error) {
-      console.log(error)
-    }
-    
-  }
-
-  // const handleRegistration = async () => {
-  //   try {
-  //     await signUp(email, password)
-  //     const response = await returnUserInfo()
-  //     const uid = response.uid
-  //     navigate('/chat')
-  //     console.log('registration successful')
-  //     await addUserToDatabase(email, username, uid);
-  //     console.log('adding to db successful')
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  };
 
   return (
     <React.Fragment>
@@ -105,7 +93,7 @@ function Register() {
           </InputRightElement>
         </InputGroup>
 
-        <Button colorScheme="blue" onClick={handleRegistration2} w={'10%'} minW={'70px'}>
+        <Button colorScheme="blue" onClick={handleRegistration} w={'10%'} minW={'70px'}>
           Sign up
         </Button>
       </Box>
