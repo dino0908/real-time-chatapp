@@ -23,24 +23,11 @@ function Login() {
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
 
-    // const fastLogin = () => {
-    //   setEmail('dinokhaw@yahoo.com.sg')
-    //   setPassword('password')
-    // }
 
-    // const stuartLogin = () => {
-    //   setEmail('stuartkhaw@yahoo.com.sg')
-    //   setPassword('password')
-    // }
     const handleLogin = async () => {
       try {
         const signInResponse = await signIn(email, password)
         navigate('/chat')
-        // if (response.data.success == true) {
-        //   navigate("/chat");
-        // } else {
-        //   
-        // }
         console.log(signInResponse)
 
       } catch (error) {
