@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { signUp, returnUserInfo, addUserToDatabase } from "./firebase";
+import { signUp, returnUserInfo, addUserToDatabase, checkUsernameTaken } from "./firebase";
 
 function Register() {
   const [show, setShow] = React.useState(false);
@@ -20,12 +20,18 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [emailInUse, setEmailInUse] = useState(false)
-  const [usernameInUse, setUsernameInUse] = useState(false)
+  const [emailOrUsernameInUse, setEmailOrUsernameInUse] = useState(false)
   const navigate = useNavigate();
 
   const handleRegistration = async () => {
     try {
+
+      const isUsernameTaken = await checkUsernameTaken(username)
+
+      if (isUsernameTaken) {
+        throw new Error();
+      }
+      
       await signUp(email, password)
       const response = await returnUserInfo()
       const uid = response.uid
@@ -34,7 +40,8 @@ function Register() {
       await addUserToDatabase(email, username, uid);
       console.log('adding to db successful')
     } catch (error) {
-      console.log(error);
+      setEmailOrUsernameInUse(true)
+      console.log(error)
     }
   };
 
@@ -65,7 +72,7 @@ function Register() {
           borderColor={'grey'}
             _hover={{ borderColor: "black" }}
         ></Input>
-        {emailInUse && <p>Email is already in use.</p>}
+        
         <br />
         <Input
           w="40%"
@@ -76,7 +83,7 @@ function Register() {
           borderColor={'grey'}
             _hover={{ borderColor: "black" }}
         ></Input>
-        {usernameInUse && <p>Username is already in use.</p>}
+       
 
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
@@ -92,7 +99,8 @@ function Register() {
             </Button>
           </InputRightElement>
         </InputGroup>
-
+        <br />
+        {emailOrUsernameInUse && <p style={{color: "red"}}>Username or email is already in use.</p>} <br />
         <Button colorScheme="blue" onClick={handleRegistration} w={'10%'} minW={'70px'}>
           Sign up
         </Button>
