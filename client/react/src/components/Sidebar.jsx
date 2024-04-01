@@ -5,6 +5,7 @@ import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
+import { signUserOut } from "../firebase";
 
 function Sidebar({ tab }) {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ function Sidebar({ tab }) {
                 size={21}
                 color="white"
                 onClick={() => {
+                  signUserOut();
                   navigate("/");
                 }}
               />

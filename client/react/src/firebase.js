@@ -1,22 +1,18 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_REACT_APP_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_REACT_APP_FIREBASE_APP_ID,
+
 };
 
 
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+export const auth = getAuth(app);
 const db = getFirestore(app);
+
 
 export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
@@ -31,6 +27,15 @@ export const returnUserInfo = () => {
     });
   });
 };
+
+export const signUserOut = async () => {
+  try {
+    signOut(auth)
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
 
 export const addUserToDatabase = async (email, username, userid) => {
   const colRef = collection(db, "users");
