@@ -22,7 +22,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo } from "./firebase";
+import { getUsername, returnUserInfo, uploadFile, getURL } from "./firebase";
 
 function Settings() {
   const [username, setUsername] = useState("");
@@ -30,15 +30,24 @@ function Settings() {
   const [email, setEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
 
     if (file) {
       console.log("Uploading file:", file);
       // Handle the file upload logic here
+      try {
+        const storageRef = await uploadFile(file); // Wait for upload to complete
+        console.log("Upload Success");
+        const downloadURL = await getURL(storageRef); // Get download URL
+        console.log("Download URL:", downloadURL);
+        //take downloadURL, add it to user in firestore db, change src of image from hardcode to fetched url by user.
+      } catch(error) {
+        console.log(error.message);
+      }
     }
-  };
+};
 
   useEffect(() => {
     const fetchData = async () => {

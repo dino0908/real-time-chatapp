@@ -1,12 +1,37 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
 
 };
 
+export const uploadFile = async (file) => {
+  const storage = getStorage();
+  const storageRef = ref(storage, file.name);
 
+  // Return a promise to track the upload completion
+  return new Promise((resolve, reject) => {
+    uploadBytes(storageRef, file).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+      resolve(storageRef); // Resolve with the storage reference
+    }).catch((error) => {
+      reject(error); // Reject if there's an error during upload
+    });
+  });
+}
+
+export const getURL = async(storageRef) => {
+  try {
+    const downloadURL = await getDownloadURL(storageRef);
+    console.log('File download URL:', downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error('Error getting download URL:', error);
+    throw error; // Rethrow error for handling in the caller function
+  }
+}
 
 const app = initializeApp(firebaseConfig);
 

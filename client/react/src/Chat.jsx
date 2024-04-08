@@ -318,7 +318,8 @@ function Chat() {
                           maxW="100%"
                           whiteSpace="pre-wrap"
                         >
-                          {message.senderUsername === username ? "You" : message.senderUsername}:&nbsp;{message.text}
+                          {message.senderUsername === username ? "You: " : ''}
+                            &nbsp;{message.text}
                         </Text>
                       </Box>
                     ))                     
