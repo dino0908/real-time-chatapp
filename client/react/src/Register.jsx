@@ -25,19 +25,16 @@ function Register() {
 
   const handleRegistration = async () => {
     try {
-
       const isUsernameTaken = await checkUsernameTaken(username)
-
       if (isUsernameTaken) {
         throw new Error();
       }
-      
       await signUp(email, password)
       const response = await returnUserInfo()
       const uid = response.uid
       navigate('/chat')
       console.log('registration successful')
-      await addUserToDatabase(email, username, uid);
+      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg');
       console.log('adding to db successful')
     } catch (error) {
       setEmailOrUsernameInUse(true)

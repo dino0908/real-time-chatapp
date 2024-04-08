@@ -22,13 +22,14 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo, uploadFile, getURL } from "./firebase";
+import { getUsername, returnUserInfo, uploadFile, getURL, getProfilePicture, updateProfilePicture } from "./firebase";
 
 function Settings() {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
   const [email, setEmail] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [profilePicURL, setProfilePicURL] = useState('https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg');
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -43,6 +44,7 @@ function Settings() {
         const downloadURL = await getURL(storageRef); // Get download URL
         console.log("Download URL:", downloadURL);
         //take downloadURL, add it to user in firestore db, change src of image from hardcode to fetched url by user.
+        await updateProfilePicture(userID, downloadURL);
       } catch(error) {
         console.log(error.message);
       }
@@ -59,6 +61,9 @@ function Settings() {
         setUsername(username);
         const email = response.email;
         setEmail(email);
+        const URL = await getProfilePicture(uid);
+        setProfilePicURL(URL); 
+
       } catch (error) {
         console.log(error.message);
       }
@@ -157,7 +162,7 @@ function Settings() {
                       <Center>
                         <Avatar
                           name="Dan Abrahmov"
-                          src="https://bit.ly/dan-abramov"
+                          src={profilePicURL}
                           size={"xl"}
                         />
                       </Center>

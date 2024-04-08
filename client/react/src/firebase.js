@@ -62,13 +62,14 @@ export const signUserOut = async () => {
   }
 }
 
-export const addUserToDatabase = async (email, username, userid) => {
+export const addUserToDatabase = async (email, username, userid, profilePic) => {
   const colRef = collection(db, "users");
   try {
     addDoc(colRef, {
       username: username,
       email: email,
       UID: userid,
+      URL: profilePic
     });
   } catch (error) {
     console.log(error.message);
@@ -97,6 +98,35 @@ export const getUsername = async (userID) => {
     return username;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getProfilePicture = async (userID) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("UID", "==", userID));
+  try {
+    const snapshot = await getDocs(q);
+    const URL = snapshot.docs[0].data().URL;
+    return URL;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateProfilePicture = async (userID, profilePictureURL) => {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("UID", "==", userID));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // Update the URL field for each matching document
+      setDoc(doc.ref, { URL: profilePictureURL }, { merge: true });
+      console.log("Profile picture updated successfully");
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    throw error;
   }
 };
 
