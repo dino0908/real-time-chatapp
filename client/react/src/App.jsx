@@ -12,6 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "./firebase";
 import { useState } from "react";
+import Loading from "./components/Loading";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -31,7 +32,7 @@ function App() {
 
 
   if (isFetching) {
-    return <h2>Loading...</h2>
+    return <Loading/>
   }
 
   return (
