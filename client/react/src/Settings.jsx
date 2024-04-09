@@ -19,22 +19,29 @@ import {
   Text,
   Input,
   VStack,
-  HStack,
+  useToast,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo, uploadFile, getURL, getProfilePicture, updateProfilePicture } from "./firebase";
+import {
+  getUsername,
+  returnUserInfo,
+  uploadFile,
+  getURL,
+  getProfilePicture,
+  updateProfilePicture,
+} from "./firebase";
 
 function Settings() {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [profilePicURL, setProfilePicURL] = useState('https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg');
+  const [profilePicURL, setProfilePicURL] = useState(
+    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+  );
+  const toast = useToast();
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
-
     if (file) {
       console.log("Uploading file:", file);
       // Handle the file upload logic here
@@ -43,13 +50,19 @@ function Settings() {
         console.log("Upload Success");
         const downloadURL = await getURL(storageRef); // Get download URL
         console.log("Download URL:", downloadURL);
-        //take downloadURL, add it to user in firestore db, change src of image from hardcode to fetched url by user.
         await updateProfilePicture(userID, downloadURL);
-      } catch(error) {
+        setProfilePicURL(downloadURL);
+        toast({
+          title: "Profile picture updated",
+          status: "success",
+          duration: 7000,
+          isClosable: true,
+        });
+      } catch (error) {
         console.log(error.message);
       }
     }
-};
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,8 +75,7 @@ function Settings() {
         const email = response.email;
         setEmail(email);
         const URL = await getProfilePicture(uid);
-        setProfilePicURL(URL); 
-
+        setProfilePicURL(URL);
       } catch (error) {
         console.log(error.message);
       }
