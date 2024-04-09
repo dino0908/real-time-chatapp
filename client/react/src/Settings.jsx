@@ -85,7 +85,7 @@ function Settings() {
 
   return (
     <div>
-      <Sidebar tab={"settings"}></Sidebar>
+      <Sidebar tab={"settings"} dp={profilePicURL}></Sidebar>
       <Box marginLeft={`min(15%, 150px)`} h="100vh" bgColor="#f0f2f0">
         <Card h="100%">
           <CardHeader>
@@ -173,7 +173,7 @@ function Settings() {
                     <CardBody>
                       <Center>
                         <Avatar
-                          name="Dan Abrahmov"
+                          name="Profile picture"
                           src={profilePicURL}
                           size={"xl"}
                         />

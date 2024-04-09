@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
 import { useNavigate } from "react-router-dom";
@@ -17,12 +17,29 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo, getUsernames, getUserIDFromUsername, startChat } from './firebase'
+import { getUsername, returnUserInfo, getUsernames, getUserIDFromUsername, startChat, getProfilePicture } from './firebase'
 
 
 function NewChat() {
   const [usernames, setUsernames] = useState([]);
   const navigate = useNavigate();
+  const [profilePicURL, setProfilePicURL] = useState(
+    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await returnUserInfo();
+        const uid = response.uid;
+        const URL = await getProfilePicture(uid);
+        setProfilePicURL(URL);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleStartChat = async (clickedUsername) => {
     try {
@@ -56,7 +73,7 @@ function NewChat() {
 
   return (
     <div>
-      <Sidebar tab={'newchat'}></Sidebar>
+      <Sidebar tab={'newchat'} dp={profilePicURL}></Sidebar>
       <Flex marginLeft={`min(15%, 150px)`} flexDirection={"column"} h={"100vh"}>
         <Flex flex={"20%"} bgColor={"#edf6fa"}>
           <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
@@ -99,8 +116,8 @@ function NewChat() {
                   >
                     <Flex flexDirection={"row"} gap={5} marginLeft={"30px"}>
                       <Avatar
-                        name="Dan Abrahmov"
-                        src="https://bit.ly/dan-abramov"
+                        name="Profile picture"
+                        src={dp}
                       />
                       <Heading size={"lg"} marginTop={"5px"}>
                         {username}

@@ -22,9 +22,7 @@ import {
   MenuList,
   MenuItem,
   Hide,
-  Show,
   useBreakpointValue,
-  calc
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -36,6 +34,7 @@ import {
   sendMessage,
   getUserIDFromUsername,
   loadMessages,
+  getProfilePicture
 } from "./firebase";
 
 function Chat() {
@@ -51,6 +50,9 @@ function Chat() {
   const [chattingWith, setChattingWith] = useState("");
   const [socket, setSocket] = useState(null);
   const [allMessages, setAllMessages] = useState([]);
+  const [profilePicURL, setProfilePicURL] = useState(
+    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+  );
 
   const debounce = (func, delay) => {
     let timer;
@@ -116,6 +118,8 @@ function Chat() {
           uid
         );
         setUsernamesClientChattingWith(listofusernames);
+        const URL = await getProfilePicture(uid);
+        setProfilePicURL(URL);
       } catch (error) {
         console.log(error.message);
       }
@@ -202,7 +206,7 @@ function Chat() {
 
   return (
     <div>
-      <Sidebar tab={"chat"}></Sidebar>
+      <Sidebar tab={"chat"} dp={profilePicURL}></Sidebar>
       <Flex
         marginLeft={`min(15%, 150px)`}
         flexDirection={"row"}
