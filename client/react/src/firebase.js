@@ -62,14 +62,15 @@ export const signUserOut = async () => {
   }
 }
 
-export const addUserToDatabase = async (email, username, userid, profilePic) => {
+export const addUserToDatabase = async (email, username, userid, profilePic, dateOfRegistration) => {
   const colRef = collection(db, "users");
   try {
     addDoc(colRef, {
       username: username,
       email: email,
       UID: userid,
-      URL: profilePic
+      URL: profilePic,
+      date: dateOfRegistration
     });
   } catch (error) {
     console.log(error.message);
@@ -92,10 +93,21 @@ export const getUsername = async (userID) => {
   const colRef = collection(db, "users");
   const q = query(colRef, where("UID", "==", userID));
   try {
-    console.log('reading document: firebase.js getusername function')
     const snapshot = await getDocs(q);
     const username = snapshot.docs[0].data().username;
     return username;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getRegistrationDate = async (userID) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("UID", "==", userID));
+  try {
+    const snapshot = await getDocs(q);
+    const date = snapshot.docs[0].data().date;
+    return date;
   } catch (error) {
     console.log(error);
   }

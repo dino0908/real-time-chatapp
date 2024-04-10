@@ -22,6 +22,12 @@ function Register() {
   const [username, setUsername] = useState("");
   const [emailOrUsernameInUse, setEmailOrUsernameInUse] = useState(false)
   const navigate = useNavigate();
+  const monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
 
   const handleRegistration = async () => {
     try {
@@ -34,7 +40,12 @@ function Register() {
       const uid = response.uid
       navigate('/chat')
       console.log('registration successful')
-      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg');
+      const currentDate = new Date();
+      const day = currentDate.getDate();
+      const monthIndex = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
+      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg', formattedDate);
       console.log('adding to db successful')
     } catch (error) {
       setEmailOrUsernameInUse(true)

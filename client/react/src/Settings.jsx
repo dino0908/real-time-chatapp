@@ -29,6 +29,7 @@ import {
   getURL,
   getProfilePicture,
   updateProfilePicture,
+  getRegistrationDate
 } from "./firebase";
 
 function Settings() {
@@ -38,6 +39,7 @@ function Settings() {
   const [profilePicURL, setProfilePicURL] = useState(
     "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
   );
+  const [dateOfRegistration, setDateOfRegistration] = useState(null)
   const toast = useToast();
 
   const handleFileChange = async (event) => {
@@ -76,6 +78,8 @@ function Settings() {
         setEmail(email);
         const URL = await getProfilePicture(uid);
         setProfilePicURL(URL);
+        const date = await getRegistrationDate(uid)
+        setDateOfRegistration(date)
       } catch (error) {
         console.log(error.message);
       }
@@ -211,7 +215,7 @@ function Settings() {
                         flexDir={"row"}
                       >
                         <Text>Member since:&nbsp;</Text>
-                        <Text fontWeight="bold">1 January 2024</Text>
+                        <Text fontWeight="bold">{dateOfRegistration}</Text>
                       </Flex>
                     </CardFooter>
                   </Card>
@@ -223,14 +227,6 @@ function Settings() {
             </Tabs>
           </CardBody>
           <CardFooter>
-            <Button
-              bgColor={"#0473e2"}
-              w={"200px"}
-              color={"white"}
-              _hover={{ bg: "#0462bf" }}
-            >
-              Update info
-            </Button>
           </CardFooter>
         </Card>
       </Box>

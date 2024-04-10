@@ -117,7 +117,7 @@ function NewChat() {
                     <Flex flexDirection={"row"} gap={5} marginLeft={"30px"}>
                       <Avatar
                         name="Profile picture"
-                        src={dp}
+                        src={profilePicURL}
                       />
                       <Heading size={"lg"} marginTop={"5px"}>
                         {username}
