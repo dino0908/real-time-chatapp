@@ -7,6 +7,10 @@ const firebaseConfig = {
 
 };
 
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+const db = getFirestore(app);
+
 export const uploadFile = async (file) => {
   const storage = getStorage();
   const storageRef = ref(storage, file.name);
@@ -32,12 +36,6 @@ export const getURL = async(storageRef) => {
     throw error; // Rethrow error for handling in the caller function
   }
 }
-
-const app = initializeApp(firebaseConfig);
-
-export const auth = getAuth(app);
-const db = getFirestore(app);
-
 
 export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
@@ -146,7 +144,6 @@ export const getUserIDFromUsername = async (username) => {
   const colRef = collection(db, "users");
   const q = query(colRef, where("username", "==", username));
   try {
-    console.log('reading document: firebase.js getuseridfromusername function')
     const snapshot = await getDocs(q);
     if (snapshot.docs.length > 0) {
       const userID = snapshot.docs[0].data().UID;
