@@ -16,15 +16,24 @@ import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
-import { signUserOut } from "../firebase";
+import { signUserOut, updateOnlineStatus, returnUserInfo } from "../firebase";
 
 function Sidebar({ tab, dp }) {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleLogOut = async () => {
-    signUserOut();
-    navigate("/");
+    try {
+      const response = await returnUserInfo()
+      const uid = response.uid
+      await updateOnlineStatus(uid, false)
+      navigate("/");
+      signUserOut();
+    }
+    catch(error) {
+      console.log(error.message)
+    }
+    
   };
 
   return (
