@@ -21,7 +21,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Hide,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { AiOutlineMore } from "react-icons/ai";

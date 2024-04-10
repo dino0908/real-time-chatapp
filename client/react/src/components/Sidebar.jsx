@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React } from "react";
 import { Box, Avatar, VStack, Button } from "@chakra-ui/react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { ChatIcon } from "@chakra-ui/icons";
@@ -6,23 +6,9 @@ import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { signUserOut } from "../firebase";
-import { returnUserInfo, getProfilePicture } from "../firebase";
 
 function Sidebar({ tab, dp }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await returnUserInfo();
-        const uid = response.uid;
-        const URL = await getProfilePicture(uid);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
     <div>
