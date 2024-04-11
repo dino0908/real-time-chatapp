@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Flex, Text, Card, Avatar } from "@chakra-ui/react";
-import { getProfilePicture, returnUserInfo, getUserIDFromUsername } from "../firebase";
+import { getProfilePicture, getUserIDFromUsername } from "../firebase";
 
 function ActiveChat({ username, onClick }) {
   
@@ -10,7 +10,6 @@ function ActiveChat({ username, onClick }) {
     const fetchData = async () => {
       try {
         const uid = await getUserIDFromUsername(username)
-        console.log(username, uid)
         const URL = await getProfilePicture(uid);
         setProfilePicURL(URL);
       } catch (error) {
@@ -30,7 +29,6 @@ function ActiveChat({ username, onClick }) {
       onClick={() => onClick(username)}
       style={{ cursor: 'pointer', transition: 'background-color 0.3s' }}
       _hover={{ bgColor: '#ebebeb', color: 'black' }}
-      
     >
       <Flex flexDirection={"row"} h={"100%"} alignItems={"center"}>
         <Avatar name="Dan Abrahmov" src={profilePicURL} />

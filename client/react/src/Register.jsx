@@ -39,14 +39,12 @@ function Register() {
       const response = await returnUserInfo()
       const uid = response.uid
       navigate('/chat')
-      console.log('registration successful')
       const currentDate = new Date();
       const day = currentDate.getDate();
       const monthIndex = currentDate.getMonth();
       const year = currentDate.getFullYear();
       const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
       await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg', formattedDate);
-      console.log('adding to db successful')
     } catch (error) {
       setEmailOrUsernameInUse(true)
       console.log(error)
@@ -92,7 +90,6 @@ function Register() {
             _hover={{ borderColor: "black" }}
         ></Input>
        
-
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
             type={show ? "text" : "password"}

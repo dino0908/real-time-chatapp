@@ -5,11 +5,10 @@ import Chat from "./Chat";
 import NewChat from "./NewChat";
 import Login from "./Login";
 import Settings from "./Settings";
-import * as React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import PrivateRoute from "./routes/PrivateRoute";
 import { onAuthStateChanged } from "firebase/auth";
-import { useEffect } from "react";
+import { React, useEffect } from "react";
 import { auth } from "./firebase";
 import { useState } from "react";
 import Loading from "./components/Loading";
@@ -17,6 +16,7 @@ import Loading from "./components/Loading";
 function App() {
   const [user, setUser] = useState(null);
   const [isFetching, setIsFetching] = useState(true)
+  
   useEffect(()=> {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -30,7 +30,6 @@ function App() {
     return ()=>unsubscribe();
   }, [])
 
-
   if (isFetching) {
     return <Loading/>
   }
@@ -42,7 +41,6 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/login" element={<Login />} />
-
           <Route path="/chat" element={<PrivateRoute user={user}><Chat></Chat></PrivateRoute>}></Route>
           <Route path="/newchat" element={<PrivateRoute user={user}><NewChat></NewChat></PrivateRoute>}></Route>
           <Route path="/settings" element={<PrivateRoute user={user}><Settings></Settings></PrivateRoute>}></Route>

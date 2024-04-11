@@ -31,8 +31,8 @@ function NewChat() {
   const navigate = useNavigate();
   const [profilePicURL, setProfilePicURL] = useState(
     "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
-  ); //profile picture of own user, to be displayed in side bar
-  const [profilePictureUrls, setProfilePictureUrls] = useState({}); //dictionary of profile pictures of all users that is listed when current user searches for new chat
+  ); // Profile picture of own user, to be displayed in side bar
+  const [profilePictureUrls, setProfilePictureUrls] = useState({}); // Dictionary of profile pictures of all users that is listed when current user searches for new chat
 
   useEffect(() => {
     const fetchData = async () => {

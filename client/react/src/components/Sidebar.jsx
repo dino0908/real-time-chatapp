@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { signUserOut } from "../firebase";
 
 function Sidebar({ tab, dp }) {
+  
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
