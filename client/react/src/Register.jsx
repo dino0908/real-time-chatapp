@@ -22,23 +22,29 @@ function Register() {
   const [username, setUsername] = useState("");
   const [emailOrUsernameInUse, setEmailOrUsernameInUse] = useState(false)
   const navigate = useNavigate();
+  const monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
 
   const handleRegistration = async () => {
     try {
-
       const isUsernameTaken = await checkUsernameTaken(username)
-
       if (isUsernameTaken) {
         throw new Error();
       }
-      
       await signUp(email, password)
       const response = await returnUserInfo()
       const uid = response.uid
       navigate('/chat')
-      console.log('registration successful')
-      await addUserToDatabase(email, username, uid);
-      console.log('adding to db successful')
+      const currentDate = new Date();
+      const day = currentDate.getDate();
+      const monthIndex = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
+      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg', formattedDate);
     } catch (error) {
       setEmailOrUsernameInUse(true)
       console.log(error)
@@ -84,7 +90,6 @@ function Register() {
             _hover={{ borderColor: "black" }}
         ></Input>
        
-
         <InputGroup w="40%" size="md" mx={"auto"} marginBottom={"20px"}>
           <Input
             type={show ? "text" : "password"}

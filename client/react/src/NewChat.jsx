@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
 import { useNavigate } from "react-router-dom";
@@ -17,24 +17,65 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo, getUsernames, getUserIDFromUsername, startChat } from './firebase'
-
+import {
+  getUsername,
+  returnUserInfo,
+  getUsernames,
+  getUserIDFromUsername,
+  startChat,
+  getProfilePicture,
+} from "./firebase";
 
 function NewChat() {
   const [usernames, setUsernames] = useState([]);
   const navigate = useNavigate();
+  const [profilePicURL, setProfilePicURL] = useState(
+    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+  ); // Profile picture of own user, to be displayed in side bar
+  const [profilePictureUrls, setProfilePictureUrls] = useState({}); // Dictionary of profile pictures of all users that is listed when current user searches for new chat
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await returnUserInfo();
+        const uid = response.uid;
+        const URL = await getProfilePicture(uid);
+        setProfilePicURL(URL);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchProfilePictures = async () => {
+      const pictures = {};
+      for (const username of usernames) {
+        try {
+          const uid = await getUserIDFromUsername(username);
+          const URL = await getProfilePicture(uid);
+          pictures[username] = URL;
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+      setProfilePictureUrls(pictures);
+    };
+
+    fetchProfilePictures();
+  }, [usernames]);
 
   const handleStartChat = async (clickedUsername) => {
     try {
-      const response = await returnUserInfo()
-      const userid1 = response.uid
-      const userid2 = await getUserIDFromUsername(clickedUsername)
-      await startChat(userid1, userid2)
-      console.log('chat started successfully')
-      navigate('/chat', { state: { chattingWith: clickedUsername } });
-    }
-    catch(error) {
-      console.log(error)
+      const response = await returnUserInfo();
+      const userid1 = response.uid;
+      const userid2 = await getUserIDFromUsername(clickedUsername);
+      await startChat(userid1, userid2);
+      console.log("chat started successfully");
+      navigate("/chat", { state: { chattingWith: clickedUsername } });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -43,11 +84,11 @@ function NewChat() {
       if (search == "") {
         setUsernames([]);
       } else {
-        const response = await returnUserInfo()
-        const uid = response.uid
-        const username = await getUsername(uid)
-        const getUsernamesResponse = await getUsernames(search, username)
-        setUsernames(getUsernamesResponse)
+        const response = await returnUserInfo();
+        const uid = response.uid;
+        const username = await getUsername(uid);
+        const getUsernamesResponse = await getUsernames(search, username);
+        setUsernames(getUsernamesResponse);
       }
     } catch (error) {
       console.log(error);
@@ -56,12 +97,14 @@ function NewChat() {
 
   return (
     <div>
-      <Sidebar tab={'newchat'}></Sidebar>
+      <Sidebar tab={"newchat"} dp={profilePicURL}></Sidebar>
       <Flex marginLeft={`min(15%, 150px)`} flexDirection={"column"} h={"100vh"}>
         <Flex flex={"20%"} bgColor={"#edf6fa"}>
           <Flex flex={"10%"} alignItems={"center"} justifyContent={"center"}>
             <Stack spacing={4} alignItems={"center"} w={"50%"}>
-              <Heading fontSize={{ base: "20px", md: '32px', lg: '42px'}}>Start a new chat</Heading>
+              <Heading fontSize={{ base: "20px", md: "32px", lg: "42px" }}>
+                Start a new chat
+              </Heading>
               <InputGroup w={"95%"}>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon></SearchIcon>
@@ -99,15 +142,18 @@ function NewChat() {
                   >
                     <Flex flexDirection={"row"} gap={5} marginLeft={"30px"}>
                       <Avatar
-                        name="Dan Abrahmov"
-                        src="https://bit.ly/dan-abramov"
+                        name="Profile picture"
+                        src={
+                          profilePictureUrls[username] ||
+                          "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+                        }
                       />
                       <Heading size={"lg"} marginTop={"5px"}>
                         {username}
                       </Heading>
                       <Spacer></Spacer>
                       <Button
-                        bg={'#0865c2'}
+                        bg={"#0865c2"}
                         color={"white"}
                         marginRight={"15px"}
                         marginTop={"5px"}

@@ -1,18 +1,41 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
 
 };
 
-
-
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
 const db = getFirestore(app);
 
+export const uploadFile = async (file) => {
+  const storage = getStorage();
+  const storageRef = ref(storage, file.name);
+
+  // Return a promise to track the upload completion
+  return new Promise((resolve, reject) => {
+    uploadBytes(storageRef, file).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+      resolve(storageRef); // Resolve with the storage reference
+    }).catch((error) => {
+      reject(error); // Reject if there's an error during upload
+    });
+  });
+}
+
+export const getURL = async(storageRef) => {
+  try {
+    const downloadURL = await getDownloadURL(storageRef);
+    console.log('File download URL:', downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error('Error getting download URL:', error);
+    throw error; // Rethrow error for handling in the caller function
+  }
+}
 
 export const returnUserInfo = () => {
   return new Promise((resolve, reject) => {
@@ -37,13 +60,15 @@ export const signUserOut = async () => {
   }
 }
 
-export const addUserToDatabase = async (email, username, userid) => {
+export const addUserToDatabase = async (email, username, userid, profilePic, dateOfRegistration) => {
   const colRef = collection(db, "users");
   try {
     addDoc(colRef, {
       username: username,
       email: email,
       UID: userid,
+      URL: profilePic,
+      date: dateOfRegistration
     });
   } catch (error) {
     console.log(error.message);
@@ -66,7 +91,6 @@ export const getUsername = async (userID) => {
   const colRef = collection(db, "users");
   const q = query(colRef, where("UID", "==", userID));
   try {
-    console.log('reading document: firebase.js getusername function')
     const snapshot = await getDocs(q);
     const username = snapshot.docs[0].data().username;
     return username;
@@ -75,11 +99,51 @@ export const getUsername = async (userID) => {
   }
 };
 
+export const getRegistrationDate = async (userID) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("UID", "==", userID));
+  try {
+    const snapshot = await getDocs(q);
+    const date = snapshot.docs[0].data().date;
+    return date;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getProfilePicture = async (userID) => {
+  const colRef = collection(db, "users");
+  const q = query(colRef, where("UID", "==", userID));
+  try {
+    const snapshot = await getDocs(q);
+    const URL = snapshot.docs[0].data().URL;
+    return URL;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateProfilePicture = async (userID, profilePictureURL) => {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("UID", "==", userID));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // Update the URL field for each matching document
+      setDoc(doc.ref, { URL: profilePictureURL }, { merge: true });
+      console.log("Profile picture updated successfully");
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    throw error;
+  }
+};
+
 export const getUserIDFromUsername = async (username) => {
   const colRef = collection(db, "users");
   const q = query(colRef, where("username", "==", username));
   try {
-    console.log('reading document: firebase.js getuseridfromusername function')
     const snapshot = await getDocs(q);
     if (snapshot.docs.length > 0) {
       const userID = snapshot.docs[0].data().UID;

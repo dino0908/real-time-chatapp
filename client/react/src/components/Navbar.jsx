@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import {
   Box,
   Flex,
@@ -16,8 +17,9 @@ import {
   MenuItem,
   IconButton,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
+
 function Navbar() {
+  
   const navigate = useNavigate();
 
   return (

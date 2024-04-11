@@ -19,24 +19,50 @@ import {
   Text,
   Input,
   VStack,
-  HStack,
+  useToast,
 } from "@chakra-ui/react";
 
-import { getUsername, returnUserInfo } from "./firebase";
+import {
+  getUsername,
+  returnUserInfo,
+  uploadFile,
+  getURL,
+  getProfilePicture,
+  updateProfilePicture,
+  getRegistrationDate
+} from "./firebase";
 
 function Settings() {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [profilePicURL, setProfilePicURL] = useState(
+    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+  );
+  const [dateOfRegistration, setDateOfRegistration] = useState(null)
+  const toast = useToast();
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
-
     if (file) {
       console.log("Uploading file:", file);
       // Handle the file upload logic here
+      try {
+        const storageRef = await uploadFile(file); // Wait for upload to complete
+        console.log("Upload Success");
+        const downloadURL = await getURL(storageRef); // Get download URL
+        console.log("Download URL:", downloadURL);
+        await updateProfilePicture(userID, downloadURL);
+        setProfilePicURL(downloadURL);
+        toast({
+          title: "Profile picture updated",
+          status: "success",
+          duration: 7000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -50,6 +76,10 @@ function Settings() {
         setUsername(username);
         const email = response.email;
         setEmail(email);
+        const URL = await getProfilePicture(uid);
+        setProfilePicURL(URL);
+        const date = await getRegistrationDate(uid)
+        setDateOfRegistration(date)
       } catch (error) {
         console.log(error.message);
       }
@@ -59,7 +89,7 @@ function Settings() {
 
   return (
     <div>
-      <Sidebar tab={"settings"}></Sidebar>
+      <Sidebar tab={"settings"} dp={profilePicURL}></Sidebar>
       <Box marginLeft={`min(15%, 150px)`} h="100vh" bgColor="#f0f2f0">
         <Card h="100%">
           <CardHeader>
@@ -147,8 +177,8 @@ function Settings() {
                     <CardBody>
                       <Center>
                         <Avatar
-                          name="Dan Abrahmov"
-                          src="https://bit.ly/dan-abramov"
+                          name="Profile picture"
+                          src={profilePicURL}
                           size={"xl"}
                         />
                       </Center>
@@ -185,7 +215,7 @@ function Settings() {
                         flexDir={"row"}
                       >
                         <Text>Member since:&nbsp;</Text>
-                        <Text fontWeight="bold">1 January 2024</Text>
+                        <Text fontWeight="bold">{dateOfRegistration}</Text>
                       </Flex>
                     </CardFooter>
                   </Card>
@@ -197,14 +227,6 @@ function Settings() {
             </Tabs>
           </CardBody>
           <CardFooter>
-            <Button
-              bgColor={"#0473e2"}
-              w={"200px"}
-              color={"white"}
-              _hover={{ bg: "#0462bf" }}
-            >
-              Update info
-            </Button>
           </CardFooter>
         </Card>
       </Box>

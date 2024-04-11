@@ -1,5 +1,16 @@
-import React from "react";
-import { Box, Avatar, VStack, Button } from "@chakra-ui/react";
+import { React } from "react";
+import {
+  Box,
+  Avatar,
+  VStack,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
@@ -7,8 +18,16 @@ import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { signUserOut } from "../firebase";
 
-function Sidebar({ tab }) {
+function Sidebar({ tab, dp }) {
+  
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleLogOut = async () => {
+    signUserOut();
+    navigate("/");
+  };
+
   return (
     <div>
       <Box
@@ -17,7 +36,7 @@ function Sidebar({ tab }) {
         top={0}
         h="100%"
         w="15%"
-        maxW={'150px'}
+        maxW={"150px"}
         bg="#00162f"
         color="white"
         p={4}
@@ -26,7 +45,7 @@ function Sidebar({ tab }) {
       >
         <Box flex="85%" borderBottom={"1px solid white"}>
           <VStack spacing={20}>
-            <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+            <Avatar name="Profile picture" src={dp} />
             <Button
               bgColor={tab == "chat" ? "#0259bd" : "#00162f"}
               _hover={{ bg: "#4287f5" }}
@@ -45,9 +64,13 @@ function Sidebar({ tab }) {
             >
               <IoPersonAddOutline size={23} color="white" />
             </Button>
-            <Button bgColor={tab == "settings" ? "#0259bd" : "#00162f"} _hover={{ bg: "#4287f5" }} onClick={() => {
-                  navigate("/settings");
-                }}>
+            <Button
+              bgColor={tab == "settings" ? "#0259bd" : "#00162f"}
+              _hover={{ bg: "#4287f5" }}
+              onClick={() => {
+                navigate("/settings");
+              }}
+            >
               <CiSettings size={25} color="white" />
             </Button>
           </VStack>
@@ -56,18 +79,31 @@ function Sidebar({ tab }) {
         <Box flex="15%">
           <VStack spacing={12} mt={9}>
             <Button bgColor={"#00162f"} _hover={{ bg: "#db1200" }}>
-              <RxExit
-                size={21}
-                color="white"
-                onClick={() => {
-                  signUserOut();
-                  navigate("/");
-                }}
-              />
+              <RxExit size={21} color="white" onClick={onOpen} />
             </Button>
           </VStack>
         </Box>
       </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          marginTop="40vh"
+        >
+          <ModalHeader>Are you sure you want to logout?</ModalHeader>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={handleLogOut}>
+              Yes
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              No
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
