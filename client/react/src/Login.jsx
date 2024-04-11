@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import { signIn, updateOnlineStatus, returnUserInfo } from "./firebase";
 
 import {
     Box,
@@ -13,6 +12,9 @@ import {
     Text,
   } from "@chakra-ui/react";
 
+  import { signIn } from "./firebase";
+
+
 function Login() {
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
@@ -21,14 +23,13 @@ function Login() {
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
 
+
     const handleLogin = async () => {
       try {
-        await signIn(email, password)
-        const response = await returnUserInfo()
-        const uid = response.uid
-        await updateOnlineStatus(uid, true)
-        console.log(uid, "set to true")
+        const signInResponse = await signIn(email, password)
         navigate('/chat')
+        console.log(signInResponse)
+
       } catch (error) {
         setSignInUnsuccessful(true)
         console.log(error);
@@ -85,6 +86,12 @@ function Login() {
         <Button colorScheme="blue" onClick={handleLogin} w={'10%'} minW={'70px'}>
           Login
         </Button>
+        {/* <Button colorScheme="blue" onClick={fastLogin} marginLeft={'30px'}>
+          fast login (dev)
+        </Button>
+        <Button colorScheme="blue" onClick={stuartLogin} marginLeft={'30px'}>
+          stuart login
+        </Button> */}
       </Box>
     </React.Fragment>
   )

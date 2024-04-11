@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, delete
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
-  
+
 };
 
 const app = initializeApp(firebaseConfig);
@@ -60,7 +60,7 @@ export const signUserOut = async () => {
   }
 }
 
-export const addUserToDatabase = async (email, username, userid, profilePic, dateOfRegistration, status) => {
+export const addUserToDatabase = async (email, username, userid, profilePic, dateOfRegistration) => {
   const colRef = collection(db, "users");
   try {
     addDoc(colRef, {
@@ -68,8 +68,7 @@ export const addUserToDatabase = async (email, username, userid, profilePic, dat
       email: email,
       UID: userid,
       URL: profilePic,
-      date: dateOfRegistration,
-      onlineStatus: status
+      date: dateOfRegistration
     });
   } catch (error) {
     console.log(error.message);
@@ -140,34 +139,6 @@ export const updateProfilePicture = async (userID, profilePictureURL) => {
     throw error;
   }
 };
-
-export const updateOnlineStatus = async (userID, status) => {
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("UID", "==", userID));
-
-  try {
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setDoc(doc.ref, { onlineStatus: status }, { merge: true });
-      console.log("orange")
-    });
-  } catch (error) {
-    console.log(error.message)
-  }
-};
-
-export const getOnlineStatus = async (userID) => {
-  const colRef = collection(db, "users");
-  const q = query(colRef, where("UID", "==", userID));
-  try {
-    const snapshot = await getDocs(q);
-    const status = snapshot.docs[0].data().onlineStatus;
-    return status;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 
 export const getUserIDFromUsername = async (username) => {
   const colRef = collection(db, "users");

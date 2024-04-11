@@ -38,15 +38,15 @@ function Register() {
       await signUp(email, password)
       const response = await returnUserInfo()
       const uid = response.uid
+      navigate('/chat')
       console.log('registration successful')
       const currentDate = new Date();
       const day = currentDate.getDate();
       const monthIndex = currentDate.getMonth();
       const year = currentDate.getFullYear();
       const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
-      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg', formattedDate, true);
+      await addUserToDatabase(email, username, uid, 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg', formattedDate);
       console.log('adding to db successful')
-      navigate('/chat')
     } catch (error) {
       setEmailOrUsernameInUse(true)
       console.log(error)
