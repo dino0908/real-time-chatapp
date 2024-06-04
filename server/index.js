@@ -52,28 +52,59 @@ io.on("connection", (socket) => {
     try {
       //store mapping between clientUID and online status
       onlineStatusMap[socket.id] = uid; //okay
+      console.log(onlineStatusMap)
     } catch (error) {
       console.log(error);
     }
   });
 
-  socket.on("logout", async () => {
+  // socket.on("logout", async () => {
+  //   try {
+  //     //store mapping between clientUID and online status
+  //     delete onlineStatusMap[socket.id]
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // });
+  socket.on("logout", async (userID) => {
     try {
-      //store mapping between clientUID and online status
-      delete onlineStatusMap[socket.id]
+      // Find the socket ID associated with the user ID
+      const userSocketID = Object.keys(onlineStatusMap).find(
+        (key) => onlineStatusMap[key] === userID // Find key with value matching userID
+      );
+      if (userSocketID) {
+        delete onlineStatusMap[userSocketID];
+        console.log(`User ${userID} logged out.`); // Optional logging
+        // Broadcast updated online status to all clients (optional)
+      } else {
+        console.log(`User with ID ${userID} not found in onlineStatusMap`); // Optional logging for debugging
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error handling logout:", error);
     }
   });
 
+
+  // Emit the response back to the client
+      // console.log('test friendstatuses', friendStatuses)
+      // test friendstatuses { dino 2 friends showing with boolean
+      //   '2FdLqICmcoNpTXPxmDU3acpOAiQ2': false,
+      //   XSY8ELiKTrTJC9GvpCEVG2RLcCJ2: false
+      // }
     socket.on("getOnlineStatuses", async (friendIDs) => { //friendIDs is correct
       const friendStatuses = {}; // Object to hold friend online statuses id/status
+      // for (const id of friendIDs) {
+      //   if (id) {
+      //     friendStatuses[id] = onlineStatusMap.hasOwnProperty(id);
+      //   }
+      // }
       for (const id of friendIDs) {
         if (id) {
-          friendStatuses[id] = onlineStatusMap.hasOwnProperty(id);
+          // Efficiently check if id exists in onlineStatusMap (using includes)
+          const isFriendOnline = Object.values(onlineStatusMap).includes(id);
+          friendStatuses[id] = isFriendOnline; // Set online status based on existence in map
         }
       }
-      // Emit the response back to the client
       socket.emit("onlineStatusResponse", friendStatuses);
     });
 

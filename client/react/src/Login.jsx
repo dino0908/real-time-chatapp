@@ -36,11 +36,8 @@ function Login() {
     const handleLogin = async () => {
       try {
         await signIn(email, password)
-        //if login successful emit a login event to server with user id
         const response = await returnUserInfo(); //state listener that returns user object if present
         const uid = response.uid;
-        //console.log('testing', uid) //works
-        // const username = await getUsername(uid);
         socket.emit("login", uid); //emit login event to server, server records client uid as 'true' (online status)
         navigate('/chat')
       } catch (error) {

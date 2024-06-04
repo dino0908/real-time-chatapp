@@ -29,10 +29,9 @@ function Sidebar({ tab, dp }) {
   const handleLogOut = async () => {
     const response = await returnUserInfo();
     const uid = response.uid;
-    const username = getUsername(uid)
     try {
       signUserOut();
-      socket.emit("logout");     //emit logout event to server
+      socket.emit("logout", uid);     //emit logout event to server
       navigate("/");
     } catch(error) {
       console.log(error.message)
