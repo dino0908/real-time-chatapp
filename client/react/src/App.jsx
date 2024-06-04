@@ -12,6 +12,7 @@ import { React, useEffect } from "react";
 import { auth } from "./firebase";
 import { useState } from "react";
 import Loading from "./components/Loading";
+import FriendList from "./FriendList";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ function App() {
           <Route path="/chat" element={<PrivateRoute user={user}><Chat></Chat></PrivateRoute>}></Route>
           <Route path="/newchat" element={<PrivateRoute user={user}><NewChat></NewChat></PrivateRoute>}></Route>
           <Route path="/settings" element={<PrivateRoute user={user}><Settings></Settings></PrivateRoute>}></Route>
+          <Route path="/friends" element={<PrivateRoute user={user}><FriendList></FriendList></PrivateRoute>}></Route>
 
         </Routes>
       </Router>

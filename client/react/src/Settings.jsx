@@ -42,6 +42,8 @@ function Settings() {
   const [dateOfRegistration, setDateOfRegistration] = useState(null)
   const toast = useToast();
 
+
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {

@@ -24,15 +24,25 @@ import {
   getUserIDFromUsername,
   startChat,
   getProfilePicture,
+  makeFriends,
+  findClientFriends,
 } from "./firebase";
 
 function NewChat() {
-  const [usernames, setUsernames] = useState([]);
+  //get list of uid of friends of client
+  //when displaying each person, only show add friend if that username's uid is not in this list
+  //so can't add a friend who is already a friend
+  const [clientFriendUsernames, setClientFriendUsernames] = useState([]);
+  const [usernames, setUsernames] = useState([]); //each username that will show up
   const navigate = useNavigate();
   const [profilePicURL, setProfilePicURL] = useState(
     "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
   ); // Profile picture of own user, to be displayed in side bar
   const [profilePictureUrls, setProfilePictureUrls] = useState({}); // Dictionary of profile pictures of all users that is listed when current user searches for new chat
+
+  useEffect(() => {
+    console.log('grape', usernames)
+  }, [usernames])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,6 +51,14 @@ function NewChat() {
         const uid = response.uid;
         const URL = await getProfilePicture(uid);
         setProfilePicURL(URL);
+        //add logic to initialize client's friend UID list usestate variable
+        //call a firebase function that goes into friends and checks every document, if document contains client's UID, other UID add to list
+        const listOfUsernames = await findClientFriends(uid); //uid belongs to client, returns list of all UIDs client is friends with
+        // setClientFriendUsernames(listOfUsernames);
+        setClientFriendUsernames((clientFriendUsernames) => [
+          ...clientFriendUsernames,
+          listOfUsernames,
+        ]);
       } catch (error) {
         console.log(error.message);
       }
@@ -74,6 +92,21 @@ function NewChat() {
       await startChat(userid1, userid2);
       console.log("chat started successfully");
       navigate("/chat", { state: { chattingWith: clickedUsername } });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //in this page implement logic that only shows add friend button if client is not friends with user
+  //so can assume that every add friend button are 2 people that are not friends
+  //client and username will be friends
+  const handleAddFriend = async (username) => {
+    try {
+      //call makefriends
+      const response = await returnUserInfo();
+      const uid = response.uid;
+      const clientusername = await getUsername(uid);
+      await makeFriends(clientusername, username);
     } catch (error) {
       console.log(error);
     }
@@ -162,6 +195,19 @@ function NewChat() {
                       >
                         Start chat
                       </Button>
+                    
+                      {!clientFriendUsernames[0].includes(username) && (
+                        <Button
+                          bg={"green"}
+                          color={"white"}
+                          marginRight={"15px"}
+                          marginTop={"5px"}
+                          _hover={{ bg: "#055bb0" }}
+                          onClick={() => handleAddFriend(username)}
+                        >
+                          Add Friend
+                        </Button>
+                      )}
                     </Flex>
                   </Card>
                 </VStack>
