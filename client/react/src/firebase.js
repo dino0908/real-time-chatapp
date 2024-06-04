@@ -405,27 +405,32 @@ export const findClientFriends = async(clientUID) => { //uid of client //this is
   try {
     //this will return array of uids 
     const colRef = collection(db, "friends");
-
     const snapshot = await getDocs(colRef); //all documents inside friends, represents all friendships
     const arrayOfDocObjects = [];
+    const arrayOfIDsClientFriendsWith = [];
+    const arrayOfUsernamesClientFriendsWith = [];
     snapshot.docs.forEach((doc) => {
       arrayOfDocObjects.push(doc.data());
     });
     //arrayofDocObjects now contains all the documents
-    const arrayOfUsernamesClientFriendsWith = [];
+    
     arrayOfDocObjects.forEach(async (obj) => {
       if (clientUID == obj.uid1 || clientUID == obj.uid22) {
         if (clientUID == obj.uid1) {
-          const friendUsername = await getUsername(obj.uid2)
-          arrayOfUsernamesClientFriendsWith.push(friendUsername);
+          arrayOfIDsClientFriendsWith.push(obj.uid2);
         } else {
-          const friendUsername = await getUsername(obj.uid2)
-          arrayOfUsernamesClientFriendsWith.push(friendUsername);
+          // const friendUsername = await getUsername(obj.uid2)
+          arrayOfIDsClientFriendsWith.push(obj.uid1);
         }
       }
     });
+    for (const id of arrayOfIDsClientFriendsWith) {
+      const username = await getUsername(id)
+      arrayOfUsernamesClientFriendsWith.push(username);
+    }
+    return arrayOfUsernamesClientFriendsWith;
     // console.log('debug', typeof(arrayOfUsernamesClientFriendsWith)) // returns object
-    return arrayOfUsernamesClientFriendsWith //should be array but is object
+    // return arrayOfUsernamesClientFriendsWith //should be array but is object
 
   } catch (error) {
     console.log(error.message)

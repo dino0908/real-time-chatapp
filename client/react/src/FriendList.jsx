@@ -30,7 +30,7 @@ import {
 //purpose is to display all the friends of client
 function FriendList() {
   const [clientFriendUsernames, setClientFriendUsernames] = useState([]);
-  const [test, setTest] = useState(['friend1', 'friend2']);
+  const [test, setTest] = useState(["friend1", "friend2"]);
 
   const [profilePicURL, setProfilePicURL] = useState(
     "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
@@ -43,11 +43,10 @@ function FriendList() {
         const uid = response.uid;
         const URL = await getProfilePicture(uid);
         setProfilePicURL(URL);
-        const listOfUsernames = await findClientFriends(uid); //findclientfriends is returning 
-        console.log('orange', listOfUsernames) //correctly returns array of string containing usernames
+        const listOfUsernames = await findClientFriends(uid); //findclientfriends is returning
+        // console.log('orange', listOfUsernames) //correctly returns array of string containing usernames
         setClientFriendUsernames(listOfUsernames);
         // console.log(typeof(listOfUsernames)) //object
-        
       } catch (error) {
         console.log(error.message);
       }
@@ -56,8 +55,8 @@ function FriendList() {
   }, []);
 
   useEffect(() => {
-    console.log('apple', clientFriendUsernames); //already contains the proper list of friends but doesn't display for some reason
-    // console.log('banana', typeof(clientFriendUsernames)) //object
+    console.log("apple", clientFriendUsernames); //already contains the proper list of friends but doesn't display for some reason
+    // console.log('banana', typeof(clientFriendUsernames)) //object, still object after making changes to firebase function
     // console.log('mango', Object.values(clientFriendUsernames))
   }, [clientFriendUsernames]);
 
@@ -94,19 +93,17 @@ function FriendList() {
           alignItems={"center"}
           justifyContent={"center"}
         >
-        <Box w={"50%"} h={"100%"}>
-        
-        {clientFriendUsernames.map((username, index) => {
-             <div key={index}>{username}</div>
+          <Box w={"50%"} h={"100%"}>
+            {clientFriendUsernames.map((username, index) => (
+              <div key={index}>{username}</div>
              //also call function and function returns online status
              //inside that function emit to server "getonlinestatus" event with iterator (username)
              //convert username to userid
              //server checks the mapping, passes userid as key and value is either true or false
              //server return 
-        })}
-        </Box>
+            ))}
+          </Box>
 
-      
           {/* <Box w={"50%"} h={"100%"}>
          {
             test.map((username, index) => (
@@ -114,7 +111,6 @@ function FriendList() {
             ))
         }
         </Box> */}
-
         </Flex>
       </Flex>
     </div>
