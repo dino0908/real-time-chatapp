@@ -436,4 +436,21 @@ export const findClientFriends = async(clientUID) => { //uid of client //this is
     console.log(error.message)
   }
 }
+//should return list of friends of client that include search
+export const searchFriends = async (search, currentUserUsername) => {
+  const searchLowerCase = search.toLowerCase();
+  try {
+    const uid = await getUserIDFromUsername(currentUserUsername);
+    const friends = await findClientFriends(uid) //array of usernames client is friends with
+    const filteredFriends = friends.filter((friend) => {
+      return friend.toLowerCase().includes(searchLowerCase)
+    })
+    return filteredFriends
+  } catch(error) {
+    console.log(error.message)
+  }
 
+
+
+  return filteredFriends;
+};
