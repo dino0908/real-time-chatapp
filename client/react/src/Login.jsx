@@ -12,7 +12,7 @@ import {
     Text,
   } from "@chakra-ui/react";
 
-  import { returnUserInfo } from "./firebase";
+  import { returnUserInfo, getUsername } from "./firebase";
 
 function Login() {
     const [show, setShow] = React.useState(false);
@@ -37,8 +37,10 @@ function Login() {
       try {
         await signIn(email, password)
         //if login successful emit a login event to server with user id
-        const response = await returnUserInfo();
+        const response = await returnUserInfo(); //state listener that returns user object if present
         const uid = response.uid;
+        //console.log('testing', uid) //works
+        // const username = await getUsername(uid);
         socket.emit("login", uid); //emit login event to server, server records client uid as 'true' (online status)
         navigate('/chat')
       } catch (error) {

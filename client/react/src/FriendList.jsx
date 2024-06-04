@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import { SearchIcon } from "@chakra-ui/icons";
+import { io } from "socket.io-client";
 import {
   getUsername,
   returnUserInfo,
-  getUsernames,
   getUserIDFromUsername,
-  startChat,
   getProfilePicture,
-  makeFriends,
   findClientFriends,
   searchFriends
 } from "./firebase";
@@ -18,24 +16,33 @@ import {
   InputGroup,
   Input,
   InputLeftElement,
-  Button,
   Flex,
   Stack,
   Heading,
   VStack,
   Card,
   Avatar,
-  Spacer,
 } from "@chakra-ui/react";
 
 //purpose is to display all the friends of client
 function FriendList() {
+  const [friendOnlineStatuses, setFriendOnlineStatuses] = useState({}); // Object to store friend username (key) and online status (true/false)
   const [clientFriendUsernames, setClientFriendUsernames] = useState([]);
-  const [test, setTest] = useState(["friend1", "friend2"]);
   const [profilePictureUrls, setProfilePictureUrls] = useState({}); // Dictionary of profile pictures of all users that is listed when current user searches for new chat
+  const [socket, setSocket] = useState(null);
+  const [userID, setUserID] = useState("");
   const [profilePicURL, setProfilePicURL] = useState(
     "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
   ); // Profile picture of own user, to be displayed in side bar
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8080");
+    setSocket(newSocket);
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,17 +50,45 @@ function FriendList() {
         const response = await returnUserInfo();
         const uid = response.uid;
         const URL = await getProfilePicture(uid);
+        setUserID(uid);
         setProfilePicURL(URL);
-        const listOfUsernames = await findClientFriends(uid); //findclientfriends is returning
-        // console.log('orange', listOfUsernames) //correctly returns array of string containing usernames
+        const listOfUsernames = await findClientFriends(uid);
         setClientFriendUsernames(listOfUsernames);
-        // console.log(typeof(listOfUsernames)) //object
       } catch (error) {
         console.log(error.message);
       }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log('apple', friendOnlineStatuses);
+  }, [friendOnlineStatuses])
+
+  useEffect(() => {
+    const listener = async () => {
+      try {
+        if (socket) {
+          const clientFriendIDs = []
+          for (const username of clientFriendUsernames) {
+            const id = await getUserIDFromUsername(username)
+            clientFriendIDs.push(id)
+          }
+          console.log(clientFriendIDs)
+          socket.emit("getOnlineStatuses", clientFriendIDs); // clientFriendIDs is correct when logged
+          socket.on("onlineStatusResponse", (friendStatuses) => {
+            setFriendOnlineStatuses(friendStatuses); // a mapping between userid and boolean status
+          });  
+        }
+      } catch(error) {
+        console.log(error.message);
+      }
+    }
+    listener();
+  }, [socket, userID, clientFriendUsernames])
+
+
+
 
   //search for friends
   const handleSearch = async (search) => {
@@ -92,12 +127,6 @@ function FriendList() {
     fetchProfilePictures();
   }, [clientFriendUsernames]);
 
-  useEffect(() => {
-    console.log("apple", clientFriendUsernames); //already contains the proper list of friends but doesn't display for some reason
-    // console.log('banana', typeof(clientFriendUsernames)) //object, still object after making changes to firebase function
-    // console.log('mango', Object.values(clientFriendUsernames))
-  }, [clientFriendUsernames]);
-
   return (
     <div>
       <Sidebar tab={"friends"} dp={profilePicURL}></Sidebar>
@@ -124,7 +153,6 @@ function FriendList() {
             </Stack>
           </Flex>
         </Flex>
-        {/* display search results (matching usernames in db) */}
         <Flex
           flex={"80%"}
           bgColor={"white"}
@@ -134,45 +162,28 @@ function FriendList() {
           <Box w={"50%"} h={"100%"}>
             {clientFriendUsernames.map((username, index) => (
               <div key={index}>
-                <VStack>
-                  <Card
-                    w={"100%"}
-                    bgColor={"white"}
-                    h="80px"
-                    justifyContent={"center"}
-                    borderRadius={"0px"}
-                  >
-                    <Flex flexDirection={"row"} gap={5} marginLeft={"30px"}>
-                      <Avatar
-                        name="Profile picture"
-                        src={
-                          profilePictureUrls[username] ||
-                          "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
-                        }
-                      />
-                      <Heading size={"lg"} marginTop={"5px"}>
-                        {username}
-                      </Heading>
-                
-                    </Flex>
-                  </Card>
-                </VStack>
-              </div>
-             //also call function and function returns online status
-             //inside that function emit to server "getonlinestatus" event with iterator (username)
-             //convert username to userid
-             //server checks the mapping, passes userid as key and value is either true or false
-             //server return 
+              <VStack>
+                <Card w="100%" bgColor="white" h="80px" justifyContent="center" borderRadius="0px">
+                  <Flex flexDirection="row" gap={5} marginLeft="30px">
+                    <Avatar
+                      name="Profile picture"
+                      src={profilePictureUrls[username] || "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"}
+                    />
+                    <Heading size="lg" marginTop="5px">
+                      {username}
+                      {/* Check if online status exists for the username in friendOnlineStatuses */}
+                      {friendOnlineStatuses[username] !== undefined && (
+                        <span style={{ color: friendOnlineStatuses[username] ? "green" : "red" }}>
+                          {friendOnlineStatuses[username] ? " (online)" : " (offline)"}
+                        </span>
+                      )}
+                    </Heading>
+                  </Flex>
+                </Card>
+              </VStack>
+            </div>
             ))}
           </Box>
-
-          {/* <Box w={"50%"} h={"100%"}>
-         {
-            test.map((username, index) => (
-            <div key={index}>{username}</div>
-            ))
-        }
-        </Box> */}
         </Flex>
       </Flex>
     </div>

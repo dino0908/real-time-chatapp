@@ -3,11 +3,15 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import pkg from 'body-parser';
-
 const { json } = pkg;
 const app = express();
 const server = createServer(app);
 const userSocketMap = {};
+
+//key - socketid, value - userid
+//on login, add the mapping onlineStatusMap[socket.id] = userid
+//on logout remove the mapping delete onlineStatusMap[socket.id];
+
 const onlineStatusMap = {};
 const io = new Server(server, {
   cors: {
@@ -23,7 +27,6 @@ io.on("connection", (socket) => {
   socket.on("setUserID", (userID) => {
     userSocketMap[userID] = socket.id;
   });
-
 
   socket.on("chat message", async (data) => {
     try {
@@ -45,23 +48,34 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("login", async (clientUID) => {
+  socket.on("login", async (uid) => {
     try {
       //store mapping between clientUID and online status
-      onlineStatusMap[clientUID] = true;
+      onlineStatusMap[socket.id] = uid; //okay
     } catch (error) {
       console.log(error);
     }
   });
 
-  socket.on("logout", async (clientUID) => {
+  socket.on("logout", async () => {
     try {
       //store mapping between clientUID and online status
-      onlineStatusMap[clientUID] = false;
+      delete onlineStatusMap[socket.id]
     } catch (error) {
       console.log(error);
     }
   });
+
+    socket.on("getOnlineStatuses", async (friendIDs) => { //friendIDs is correct
+      const friendStatuses = {}; // Object to hold friend online statuses id/status
+      for (const id of friendIDs) {
+        if (id) {
+          friendStatuses[id] = onlineStatusMap.hasOwnProperty(id);
+        }
+      }
+      // Emit the response back to the client
+      socket.emit("onlineStatusResponse", friendStatuses);
+    });
 
   //on loading of friends in friends list, emit an event to server with the friend UID, server returns true or false
   

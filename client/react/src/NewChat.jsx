@@ -59,8 +59,6 @@ function NewChat() {
           ...clientFriendUsernames,
           listOfUsernames,
         ]);
-        console.log("here", listOfUsernames); //does log properly 0 is a friend, 1 is another friend
-        console.log("here2", clientFriendUsernames[0]); //clientFriendusernames[0] will be the array of names
       } catch (error) {
         console.log(error.message);
       }

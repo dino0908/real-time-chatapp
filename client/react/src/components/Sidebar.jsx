@@ -16,7 +16,7 @@ import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
-import { signUserOut } from "../firebase";
+import { getUsername, signUserOut } from "../firebase";
 import { io } from "socket.io-client";
 import { returnUserInfo } from "../firebase";
 
@@ -27,13 +27,16 @@ function Sidebar({ tab, dp }) {
   const [socket, setSocket] = useState(null);
 
   const handleLogOut = async () => {
-    signUserOut();
-    //successful logout
     const response = await returnUserInfo();
     const uid = response.uid;
-    //emit logout event to server
-    socket.emit("login", uid);
-    navigate("/");
+    const username = getUsername(uid)
+    try {
+      signUserOut();
+      socket.emit("logout");     //emit logout event to server
+      navigate("/");
+    } catch(error) {
+      console.log(error.message)
+    }
   };
 
   useEffect(() => {
@@ -44,7 +47,6 @@ function Sidebar({ tab, dp }) {
       newSocket.disconnect();
     };
   }, []);
-
 
   return (
     <div>
