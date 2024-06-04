@@ -4,7 +4,12 @@ import { getFirestore, collection, addDoc, getDoc, getDocs, query, where, delete
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
-
+  apiKey: "AIzaSyAcsvFVtbJyUju3aZqBvQ7Xy0OWgIDB6pE",
+  authDomain: "chatapp-6ec9f.firebaseapp.com",
+  projectId: "chatapp-6ec9f",
+  storageBucket: "chatapp-6ec9f.appspot.com",
+  messagingSenderId: "368390895480",
+  appId: "1:368390895480:web:ae2c06a97472866c86ba8d"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -371,6 +376,59 @@ export const deleteChat = async (username1, username2) => {
   }
   catch(error) {
     console.log(error)
+  }
+}
+
+//friends collection, each document is a 'friendship' and it stores uid of both parties
+//inside here we need to go into friends collection, make the document
+//at this point the document is not created or else the add friends button wouldn't show up to call this
+export const makeFriends = async(username1, username2) => {
+  try {
+    //refer to the friends collection
+    const colRef = collection(db, "friends");
+    const userID1 = await getUserIDFromUsername(username1)
+    const userID2 = await getUserIDFromUsername(username2)
+    //add document (friendship) to collection
+    addDoc(colRef, {
+      uid1: userID1,
+      uid2: userID2,
+    });
+
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+//add logic to initialize client's friend UID list usestate variable
+//call a firebase function that goes into friends and checks every document, if document contains client's UID, other UID add to list
+export const findClientFriends = async(clientUID) => { //uid of client //this is returning an object instead of arr
+  try {
+    //this will return array of uids 
+    const colRef = collection(db, "friends");
+
+    const snapshot = await getDocs(colRef); //all documents inside friends, represents all friendships
+    const arrayOfDocObjects = [];
+    snapshot.docs.forEach((doc) => {
+      arrayOfDocObjects.push(doc.data());
+    });
+    //arrayofDocObjects now contains all the documents
+    const arrayOfUsernamesClientFriendsWith = [];
+    arrayOfDocObjects.forEach(async (obj) => {
+      if (clientUID == obj.uid1 || clientUID == obj.uid22) {
+        if (clientUID == obj.uid1) {
+          const friendUsername = await getUsername(obj.uid2)
+          arrayOfUsernamesClientFriendsWith.push(friendUsername);
+        } else {
+          const friendUsername = await getUsername(obj.uid2)
+          arrayOfUsernamesClientFriendsWith.push(friendUsername);
+        }
+      }
+    });
+    // console.log('debug', typeof(arrayOfUsernamesClientFriendsWith)) // returns object
+    return arrayOfUsernamesClientFriendsWith //should be array but is object
+
+  } catch (error) {
+    console.log(error.message)
   }
 }
 

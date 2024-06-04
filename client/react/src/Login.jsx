@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { signIn } from "./firebase";
+import { io } from "socket.io-client";
 import {
     Box,
     InputGroup,
@@ -11,6 +12,8 @@ import {
     Text,
   } from "@chakra-ui/react";
 
+  import { returnUserInfo } from "./firebase";
+
 function Login() {
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);
@@ -18,10 +21,25 @@ function Login() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
+    const [socket, setSocket] = useState(null);
+
+
+    useEffect(() => {
+      const newSocket = io("http://localhost:8080");
+      setSocket(newSocket);
+      // Clean up the socket connection when the component unmounts
+      return () => {
+        newSocket.disconnect();
+      };
+    }, []);
 
     const handleLogin = async () => {
       try {
         await signIn(email, password)
+        //if login successful emit a login event to server with user id
+        const response = await returnUserInfo();
+        const uid = response.uid;
+        socket.emit("login", uid); //emit login event to server, server records client uid as 'true' (online status)
         navigate('/chat')
       } catch (error) {
         setSignInUnsuccessful(true)

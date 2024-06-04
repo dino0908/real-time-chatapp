@@ -8,6 +8,7 @@ const { json } = pkg;
 const app = express();
 const server = createServer(app);
 const userSocketMap = {};
+const onlineStatusMap = {};
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -22,6 +23,8 @@ io.on("connection", (socket) => {
   socket.on("setUserID", (userID) => {
     userSocketMap[userID] = socket.id;
   });
+
+
   socket.on("chat message", async (data) => {
     try {
       console.log("Received chat message:", data);
@@ -42,6 +45,26 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("login", async (clientUID) => {
+    try {
+      //store mapping between clientUID and online status
+      onlineStatusMap[clientUID] = true;
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on("logout", async (clientUID) => {
+    try {
+      //store mapping between clientUID and online status
+      onlineStatusMap[clientUID] = false;
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  //on loading of friends in friends list, emit an event to server with the friend UID, server returns true or false
+  
   socket.on("disconnect", () => {
     const disconnectedUserID = Object.keys(userSocketMap).find(
       (key) => userSocketMap[key] === socket.id

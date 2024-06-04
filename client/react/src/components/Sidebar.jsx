@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useState, useEffect } from "react";
 import {
   Box,
   Avatar,
@@ -17,16 +17,34 @@ import { CiSettings } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { signUserOut } from "../firebase";
+import { io } from "socket.io-client";
+import { returnUserInfo } from "../firebase";
 
 function Sidebar({ tab, dp }) {
   
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [socket, setSocket] = useState(null);
 
   const handleLogOut = async () => {
     signUserOut();
+    //successful logout
+    const response = await returnUserInfo();
+    const uid = response.uid;
+    //emit logout event to server
+    socket.emit("login", uid);
     navigate("/");
   };
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8080");
+    setSocket(newSocket);
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
 
   return (
     <div>
@@ -60,6 +78,15 @@ function Sidebar({ tab, dp }) {
               _hover={{ bg: "#4287f5" }}
               onClick={() => {
                 navigate("/newchat");
+              }}
+            >
+              <IoPersonAddOutline size={23} color="white" />
+            </Button>
+            <Button
+              bgColor={tab == "friends" ? "#0259bd" : "#00162f"}
+              _hover={{ bg: "#4287f5" }}
+              onClick={() => {
+                navigate("/friends");
               }}
             >
               <IoPersonAddOutline size={23} color="white" />
