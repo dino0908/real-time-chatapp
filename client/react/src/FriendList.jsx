@@ -8,7 +8,7 @@ import {
   getUserIDFromUsername,
   getProfilePicture,
   findClientFriends,
-  searchFriends
+  searchFriends,
 } from "./firebase";
 
 import {
@@ -24,10 +24,12 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 
-//purpose is to display all the friends of client
 function FriendList() {
-  const [friendOnlineStatuses, setFriendOnlineStatuses] = useState({}); // Object to store friend username (key) and online status (true/false)
-  const [friendOnlineStatusUsernameMapping, setFriendOnlineStatusUsernameMapping] = useState({});
+  const [friendOnlineStatuses, setFriendOnlineStatuses] = useState({}); // Object to store friend userid (key) and online status (true/false)
+  const [
+    friendOnlineStatusUsernameMapping,
+    setFriendOnlineStatusUsernameMapping,
+  ] = useState({}); // Object to store friend username (key) and online status (true/false)
   const [clientFriendUsernames, setClientFriendUsernames] = useState([]);
   const [profilePictureUrls, setProfilePictureUrls] = useState({}); // Dictionary of profile pictures of all users that is listed when current user searches for new chat
   const [socket, setSocket] = useState(null);
@@ -70,59 +72,45 @@ function FriendList() {
           const username = await getUsername(id);
           usernameMapping[username] = friendOnlineStatuses[id];
         }
-        // console.log('username mapping', usernameMapping) prints test false stuart false which is correct
         setFriendOnlineStatusUsernameMapping(usernameMapping);
       } catch (error) {
         console.log(error.message);
       }
     };
-  
-    updateUsernameMapping(); // Call the async function immediately within useEffect
+    updateUsernameMapping();
   }, [friendOnlineStatuses]);
-
-  useEffect(()=> {
-    console.log("please", friendOnlineStatusUsernameMapping)
-  }, [friendOnlineStatusUsernameMapping])
-  
 
   useEffect(() => {
     const listener = async () => {
       try {
         if (socket) {
-          const clientFriendIDs = []
+          const clientFriendIDs = [];
           for (const username of clientFriendUsernames) {
-            const id = await getUserIDFromUsername(username)
-            clientFriendIDs.push(id)
+            const id = await getUserIDFromUsername(username);
+            clientFriendIDs.push(id);
           }
-          socket.emit("getOnlineStatuses", clientFriendIDs); // clientFriendIDs is correct when logged
+          socket.emit("getOnlineStatuses", clientFriendIDs);
           socket.on("onlineStatusResponse", (friendStatuses) => {
-            // console.log('front end received onlinestatusresponse event') //yes received
-            // console.log("value", friendStatuses) prints uid false, uid false
-            setFriendOnlineStatuses(friendStatuses); // a mapping between userid and boolean status
-          });  
+            setFriendOnlineStatuses(friendStatuses);
+          });
         }
-      } catch(error) {
+      } catch (error) {
         console.log(error.message);
       }
-    }
+    };
     listener();
-  }, [socket, userID, clientFriendUsernames])
+  }, [socket, userID, clientFriendUsernames]);
 
-
-
-
-  //search for friends
   const handleSearch = async (search) => {
     const response = await returnUserInfo();
     const uid = response.uid;
     const username = await getUsername(uid);
     try {
       if (search == "") {
-        const friends = await findClientFriends(uid)
+        const friends = await findClientFriends(uid);
         setClientFriendUsernames(friends);
       } else {
         const result = await searchFriends(search, username);
-        //username is client's username. should return list of friends of client that include search
         setClientFriendUsernames(result);
       }
     } catch (error) {
@@ -144,7 +132,6 @@ function FriendList() {
       }
       setProfilePictureUrls(pictures);
     };
-
     fetchProfilePictures();
   }, [clientFriendUsernames]);
 
@@ -181,31 +168,47 @@ function FriendList() {
           justifyContent={"center"}
         >
           <Box w={"50%"} h={"100%"}>
-  {clientFriendUsernames.map((username, index) => (
-    <div key={index}>
-      <VStack>
-        <Card w="100%" bgColor="white" h="80px" justifyContent="center" borderRadius="0px">
-          <Flex flexDirection="row" gap={5} marginLeft="30px">
-            <Avatar
-              name="Profile picture"
-              src={profilePictureUrls[username] || "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"}
-            />
-            <Heading size="lg" marginTop="5px">
-              {username}
-              {/* Check for username in friendOnlineStatusUsernameMapping and display online status */}
-              {friendOnlineStatusUsernameMapping[username] !== undefined && (
-                <span style={{ color: friendOnlineStatusUsernameMapping[username] ? "green" : "red" }}>
-                  {friendOnlineStatusUsernameMapping[username] ? " (online)" : " (offline)"}
-                </span>
-              )}
-            </Heading>
-          </Flex>
-        </Card>
-      </VStack>
-    </div>
-  ))}
-</Box>
-
+            {clientFriendUsernames.map((username, index) => (
+              <div key={index}>
+                <VStack>
+                  <Card
+                    w="100%"
+                    bgColor="white"
+                    h="80px"
+                    justifyContent="center"
+                    borderRadius="0px"
+                  >
+                    <Flex flexDirection="row" gap={5} marginLeft="30px">
+                      <Avatar
+                        name="Profile picture"
+                        src={
+                          profilePictureUrls[username] ||
+                          "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg"
+                        }
+                      />
+                      <Heading size="lg" marginTop="5px">
+                        {username}
+                        {friendOnlineStatusUsernameMapping[username] !==
+                          undefined && (
+                          <span
+                            style={{
+                              color: friendOnlineStatusUsernameMapping[username]
+                                ? "green"
+                                : "red",
+                            }}
+                          >
+                            {friendOnlineStatusUsernameMapping[username]
+                              ? " (Online)"
+                              : " (Offline)"}
+                          </span>
+                        )}
+                      </Heading>
+                    </Flex>
+                  </Card>
+                </VStack>
+              </div>
+            ))}
+          </Box>
         </Flex>
       </Flex>
     </div>

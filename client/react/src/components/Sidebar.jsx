@@ -14,27 +14,27 @@ import {
 import { IoPersonAddOutline } from "react-icons/io5";
 import { ChatIcon } from "@chakra-ui/icons";
 import { CiSettings } from "react-icons/ci";
+import { LiaUserFriendsSolid } from "react-icons/lia";
 import { RxExit } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
-import { getUsername, signUserOut } from "../firebase";
+import { signUserOut } from "../firebase";
 import { io } from "socket.io-client";
 import { returnUserInfo } from "../firebase";
 
 function Sidebar({ tab, dp }) {
-  
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [socket, setSocket] = useState(null);
 
   const handleLogOut = async () => {
     const response = await returnUserInfo();
-    const uid = response.uid;
+    const uid = response.uid; //Get userid first before signing out and losing access to user state
     try {
       signUserOut();
-      socket.emit("logout", uid);     //emit logout event to server
+      socket.emit("logout", uid); //Emit logout event for server to handle
       navigate("/");
-    } catch(error) {
-      console.log(error.message)
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -90,7 +90,7 @@ function Sidebar({ tab, dp }) {
                 navigate("/friends");
               }}
             >
-              <IoPersonAddOutline size={23} color="white" />
+              <LiaUserFriendsSolid size={23} color="white" />
             </Button>
             <Button
               bgColor={tab == "settings" ? "#0259bd" : "#00162f"}

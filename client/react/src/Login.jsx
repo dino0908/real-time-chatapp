@@ -12,7 +12,7 @@ import {
     Text,
   } from "@chakra-ui/react";
 
-  import { returnUserInfo, getUsername } from "./firebase";
+  import { returnUserInfo } from "./firebase";
 
 function Login() {
     const [show, setShow] = React.useState(false);
@@ -22,7 +22,6 @@ function Login() {
     const navigate = useNavigate();
     const [signInUnsuccessful, setSignInUnsuccessful] = useState(false)
     const [socket, setSocket] = useState(null);
-
 
     useEffect(() => {
       const newSocket = io("http://localhost:8080");
@@ -36,9 +35,9 @@ function Login() {
     const handleLogin = async () => {
       try {
         await signIn(email, password)
-        const response = await returnUserInfo(); //state listener that returns user object if present
+        const response = await returnUserInfo();
         const uid = response.uid;
-        socket.emit("login", uid); //emit login event to server, server records client uid as 'true' (online status)
+        socket.emit("login", uid); //Emit login event for server to handle
         navigate('/chat')
       } catch (error) {
         setSignInUnsuccessful(true)
